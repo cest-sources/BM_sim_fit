@@ -23,6 +23,8 @@ P.kAF = P.kFA*P.fF;
 P.dwG = P.dwA+P.dwG;
 P.kAG = P.kGA*P.fG;
 
+
+
 if multiple
     zspec=[];
     xZspec=[];
@@ -32,10 +34,27 @@ if multiple
             P.td=calc_td(P.tp,P.DC);
         end
             Msim    = NUMERIC_SIM(P);
+            
+            if isfield(P,'normalized')
+                if ~isempty(P.normalized)
+                    
+                    Msim.zspec=Msim.zspec./Msim.zspec(find_nearest(xxx, P.normalized));
+                    
+                end;
+            end;
+            
             zspec   = [zspec ; abs(Msim.zspec)];
             xZspec  = [xZspec ; xxx];
     end;
 else
     Msim    = NUMERIC_SIM(P);
+    
+    if isfield(P,'normalized')
+        if P.normalized==1
+            Msim.zspec=Msim.zspec./Msim.zspec(end);
+            
+        end;
+    end;
     zspec   = Msim.zspec;
 end;
+
