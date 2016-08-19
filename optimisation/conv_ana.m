@@ -41,8 +41,8 @@ if multiple
             end;
             
     
-            zspec   = [zspec ; abs(Msim.zspec)];
-            xZspec  = [xZspec ; xxx];
+            zspec   = [zspec  abs(Msim.zspec)];
+            xZspec  = [xZspec  xxx];
             assignin('base','Rex',Rex);
             assignin('base','S',S);
     end;
