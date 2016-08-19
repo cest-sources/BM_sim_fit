@@ -9,7 +9,7 @@
 P.analytic      = 1;                    % Optimization type - cases: analytical(1), numerical(0)
 
 P.MT            = 0;                    % 1 = with MT, 0 = no MT pool (MT is always pool C)
-P.MT_lineshape  = 'Gaussian';         % MT lineshape - cases: SuperLorentzian, Gaussian, Lorentzian
+P.MT_lineshape  = 'Gaussian';           % MT lineshape - cases: SuperLorentzian, Gaussian, Lorentzian
 P.n_cest_pool   = 1;                    % number of CEST/NOE pools (CEST pools: B,D,E,F,G)
 P.Rex_sol       = 'Hyper';              % cases: 'Hyper', 'Lorentz' , 'minilorentz'
 
@@ -24,19 +24,19 @@ P.dummies=1;  %% or better shots?
 P.TTM_rep         = 0;    
 
 % saturation
-P.FREQ          = 7*gamma_;       % frequency (=B0[T] * gamma)
-P.B1            = 10;                  % B1 value in µT
-P.Trec          = 0;                    % recover time in s
+P.FREQ          = 7*gamma_;             % frequency (=B0[T] * gamma)
+P.B1            = 10;                   % B1 value in µT
+P.Trec          = 3;                    % recover time in s
 P.spoilf        = 0;                    % spoilingfactor (0 = full spoiling, 1= no spoiling)
-P.Zi            = 1;                    % initial magnetisation (should be between -1 and +1)
+P.Zi            = 0;                    % initial magnetisation (should be between -1 and +1)
 
-P.pulsed        = 1;                    % 0 = cw saturation, 1 = pulsed saturation
+P.pulsed        = 0;                    % 0 = cw saturation, 1 = pulsed saturation
 
 if P.pulsed
     P.shape = 'gauss_ucl';              % cases: SPINLOCK, seq_gauss, block, block_trap, gauss, sech, sinc_1, sinc_2, sinc_3, sinc_4
-    P.n     = 80;                       % number of saturation pulses
-    P.tp    = 0.1;                      % saturation time per pulse in s
-    P.DC    = 0.9091;                      % duty cycle
+    P.n     = 151;                      % number of saturation pulses
+    P.tp    = 0.05;                      % saturation time per pulse in s
+    P.DC    = 0.9091;                   % duty cycle
 else
     P.tp    = 20;                       % saturation time in s
     P.n     = 1;                        % choose n=1 for cw saturation
@@ -53,7 +53,7 @@ P.c             = 1;                      % this is a free parameter to play aro
 
 %% 1.2: set t vary and varyval (manuel)
 % which variables were varied in your measurements
-%%1.2a:QUEST
+%% 1.2a:QUEST
       vary    = {'tp'}; % e.g. {'B1','Trec','DC'}
       clear varyval;
       varyval(1,:) = [10.0000    7.5000    5.0000    4.0000    3.0000    2.0000    1.5000    1.0000    0.7500    0.5000 ]
@@ -68,7 +68,7 @@ P.c             = 1;                      % this is a free parameter to play aro
 w_x=[-80:2:-60 -59:-40 -38:2:38 40:60 62:2:80];  % offset axis
 w_xx=repmat(w_x,numel(varyval));                 % combined offset axis
 P.xZspec=w_x;
-P.analytic=1;
+P.analytic=0;
 
 tic
 P.normalized=[-80]
@@ -121,7 +121,6 @@ T.upperB      = [   60         P.fB*10        1500000        66         10000   
 
 % determine which case (--> parameters) is used
 [dep_vars startValue lowerbounds upperbounds] = casedetermination(P,T);
-
 
 
 % plot your measured and simulated data (uses starting point values)
