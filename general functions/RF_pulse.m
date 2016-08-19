@@ -1,6 +1,9 @@
-function [w1 dphase theta B1q]=RF_pulse(P,teile)
+function [w1 dphase theta B1q]=RF_pulse(P,teile,B1overide)
 % comments here
 % last change: 2015/06/11 by PS
+if nargin>2
+    P.B1=B1overide;
+end;
 
 tpulse=0:P.tp/teile:P.tp;
 dphase=0;
@@ -95,6 +98,28 @@ elseif any(strcmp(P.shape,'gauss'))
         %b1 quadratisch
         w1=gauss(tpulse,P.tp/2,sqrt((P.tp/P.DC) )*P.B1,P.tp/(2*3));
     end;
+    
+elseif any(strcmp(P.shape,'gauss_ucl'))
+    nsig=2.92;
+    epsilon=0.00001;
+    %b1 linear
+    gauss=@(t,t0,w1max,sig) 1./sqrt(2*pi*sig^2) *w1max.*exp(-(t-t0).^2./(2.*sig.^2)); 
+    
+    w1=gauss(tpulse,P.tp/2,P.B1,P.tp./(2*nsig));
+    
+    %b1 linear
+    %norm=trapz(tpulse,abs(w1))./((P.tp+P.td*( (P.n-1)/P.n )));
+    norm=trapz(tpulse,abs(w1))./(P.tp/P.DC);
+    w1=w1./norm*P.B1;
+
+    if P.B1cwpe_quad==1
+        %b1 quadratisch
+        norm=sqrt(trapz(tpulse,abs(w1.^2))./((P.tp/P.DC)));
+        w1=w1./norm*P.B1;
+    elseif P.B1cwpe_quad==-1
+        w1=w1.*P.DC; 
+    end;
+    
 
  
     

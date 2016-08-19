@@ -73,9 +73,9 @@ Ztab{'ta5','offset'}{1}(1)=[];
 
 %% READ DATA FROM Ztab
 clear vary varyval
-[xxx, xZspec, Z, varyval, vary, Ptab]= plot_tab(Ztab,'ta5','B1_run');
+[w_x, Z_x, w_xx, Z_xx, varyval, vary, Ptab]= plot_tab(Ztab,'ta5','B1_run');
 
-P.xZspec=xxx;
+P.xZspec=w_x;
 P.tp=Ptab.tsat;
 P.Trec=Ptab.Trec;
 P.Zi=cos(Ptab.readout_flipangle*pi/180);
@@ -206,15 +206,15 @@ T.upperG      = [5          0.01        10000       200         ];
 % plot your measured and simulated data (uses starting point values)
 if P.analytic
     if P.asym_fit
-        FIT = conv_ana_asym(startValue,xxx,P,dep_vars,vary,varyval);
+        FIT = conv_ana_asym(startValue,w_x,P,dep_vars,vary,varyval);
     else
-        FIT = conv_ana(startValue,xxx,P,dep_vars,vary,varyval);
+        FIT = conv_ana(startValue,w_x,P,dep_vars,vary,varyval);
     end
 else
     if P.asym_fit
-        FIT = conv_num_asym(startValue,xxx,P,dep_vars,vary,varyval);
+        FIT = conv_num_asym(startValue,w_x,P,dep_vars,vary,varyval);
     else
-        FIT = conv_num(startValue,xxx,P,dep_vars,vary,varyval);
+        FIT = conv_num(startValue,w_x,P,dep_vars,vary,varyval);
     end
 end
 
@@ -224,7 +224,7 @@ if P.asym_fit % if u fit an Asym-spectrum
     plot(x_asym_all,y_asym_all,'x',x_asym_all,FIT,x_asym_all,y_asym_all-FIT); hold on;
     clear leg;
 else % if u fit a Z-spectrum
-    plot(xZspec,Z,'x',xZspec,FIT,xZspec,Z-FIT); hold on;
+    plot(w_xx,Z,'x',w_xx,FIT,w_xx,Z-FIT); hold on;
     clear leg;
     set(gca,'XDir','reverse');
 end
@@ -242,15 +242,15 @@ end
 
 if P.analytic == 1 % use analytical solution
     if P.asym_fit % fit Asym-spectrum
-        f = @(x,xdata) conv_ana_asym(x,xxx,P,dep_vars,vary,varyval);
+        f = @(x,xdata) conv_ana_asym(x,w_x,P,dep_vars,vary,varyval);
     else % fit Z-spectrum
-        f = @(x,xdata) conv_ana(x,xxx,P,dep_vars,vary,varyval);
+        f = @(x,xdata) conv_ana(x,w_x,P,dep_vars,vary,varyval);
     end
 else % use numerical solution
     if P.asym_fit % fit Asym-spectrum
-        f = @(x,xdata) conv_num_asym(x,xxx,P,dep_vars,vary,varyval);
+        f = @(x,xdata) conv_num_asym(x,w_x,P,dep_vars,vary,varyval);
     else % fit Z-spectrum
-        f = @(x,xdata) conv_num(x,xxx,P,dep_vars,vary,varyval);
+        f = @(x,xdata) conv_num(x,w_x,P,dep_vars,vary,varyval);
     end
 end
 
@@ -260,7 +260,7 @@ options = optimset('PlotFcns',{@optimplotfval},'TolFun',1e-8,'MaxIter',400,'Disp
 if P.asym_fit
     [x resnorm RES,EXITFLAG,OUTPUT,LAMBDA,JACOBIAN] = lsqcurvefit(f,startValue,x_asym_all,y_asym_all,lowerbounds,upperbounds,options);
 else
-    [x resnorm RES,EXITFLAG,OUTPUT,LAMBDA,JACOBIAN] = lsqcurvefit(f,startValue,xZspec,Z,lowerbounds,upperbounds,options);
+    [x resnorm RES,EXITFLAG,OUTPUT,LAMBDA,JACOBIAN] = lsqcurvefit(f,startValue,w_xx,Z,lowerbounds,upperbounds,options);
 end
 
 [ci, varb, corrb, varinf] = nlparci(x,resnorm,JACOBIAN,0.5);
@@ -278,7 +278,7 @@ ylabel(dep_vars)
 % @optimplotstepsize plots the step size.
 % @optimplotfirstorderopt plots the first-order optimality measure.
 
-FIT=f(x,xxx);
+FIT=f(x,w_x);
 
 for i=1:numel(dep_vars)
     fprintf('%s: real=%f  fit=%f+-%.5f  start=%f\n',dep_vars{i},P.(dep_vars{i}),x(i),ci(i,2), startValue(i));
@@ -289,7 +289,7 @@ figure(2000)
 if P.asym_fit
     plot(x_asym_all,y_asym_all,'x',x_asym_all,FIT);
 else
-    plot(xZspec,Z,'x',xZspec,FIT,xZspec,Z-FIT);
+    plot(w_xx,Z,'x',w_xx,FIT,w_xx,Z-FIT);
 end
 
 for ii=1:numel(startValue) 
