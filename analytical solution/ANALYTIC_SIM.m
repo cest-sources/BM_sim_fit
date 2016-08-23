@@ -6,8 +6,9 @@ xZspec  = Sim.xZspec;
         
 [S Rex] = rho_s(Sim);
        
-R1rho   = S.Rho_full;        
-theta   = S.theta;
+R1rho   = S.Rho_full(:);        
+theta   = S.theta(:);
+Rex=Rex(:);
                 
 if strcmp(Sim.shape,'block')
     dEV=1;
@@ -45,8 +46,8 @@ else
     %%%%%%%%% FOR n POOLS  %%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    Zss         = 1 - ((1-exp(R1rho*Sim.tp)) .* (1-cos(theta) .* Sim.R1A ./ (-R1rho))) ./ (1-exp(R1rho.*Sim.tp-Sim.R1A*Sim.td));
-    Z_santyr    = (Zi-Zss).*exp((R1rho*Sim.tp-Sim.R1A*Sim.td)*Sim.n) +Zss;
+    Zss         = 1 - ((1-exp(R1rho(:)*Sim.tp)) .* (1-cos(theta(:)) .* Sim.R1A ./ (-R1rho(:)))) ./ (1-exp(R1rho(:).*Sim.tp-Sim.R1A*Sim.td));
+    Z_santyr    = (Zi-Zss).*exp((R1rho(:)*Sim.tp-Sim.R1A*Sim.td)*Sim.n) +Zss;
     M.zspec_santyr = Z_santyr;
     clear Zss
     
@@ -57,12 +58,12 @@ else
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     Q   = exp(-(Sim.R1A)*Sim.td);
-    p   = exp(R1rho*Sim.tp);
+    p   = exp(R1rho(:)*Sim.tp);
     if strcmp(Sim.shape,'block') || strcmp(Sim.shape,'SPINLOCK')
         alpha_F = alpha_f(Sim,xZspec);
     else
         Sim.alpha_fac = 0.5;
-        alpha_F = Sim.alpha_fac* S.alpha_f_mean;    %alpha_f(P,xZspec);
+        alpha_F = Sim.alpha_fac* S.alpha_f_mean(:);    %alpha_f(P,xZspec);
     end
     Zss = (Pz.*Pzeff.*(1-Q) - (1-p.^(-1)) .* (-Pz.*cos(theta).*Sim.R1A./(R1rho))) ./ (p.^(-1)-Pz.*Pzeff.*((1-alpha_F).*Q));
     xi  = ((1-alpha_F)*Q).*Pz.*Pzeff;   %%MZ 8.7.2013
@@ -78,8 +79,8 @@ else
         %%% ALL OTHER POOLS = SANTYR  %%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        Psi = (Sim.fB+Rex.minilorentz_b./Sim.kBA);          %S.Rex ist negativ
-        p   = exp(S.Rho_full*Sim.tp);                     %S.Rho ist negativ
+        Psi = (Sim.fB+Rex.minilorentz_b(:)./Sim.kBA);          %S.Rex ist negativ
+        p   = exp(S.Rho_full(:)*Sim.tp);                     %S.Rho ist negativ
         r1a = Sim.R1A+Sim.kAB;
         r1b = Sim.R1B+Sim.kBA;
         a   = 1/2*(r1b+r1a+sqrt((r1b-r1a)^2+4*Sim.kBA*Sim.kAB));
