@@ -249,6 +249,19 @@ switch Sim.CESTagent
     
     case 'none'
         
+    case 'alanin_ucl'
+        Sim.R2B=66.66;
+        Sim.dwB=3;
+        Sim.fB=1.0*0.1/111;
+        Sim.kBA=700;
+        Sim.kAB=Sim.kBA*Sim.fB;
+        
+        Sim.R2D=66.66;
+        Sim.dwD=2;
+        Sim.fD=1.0*0.1/111;
+        Sim.kDA=700;
+        Sim.kAD=Sim.kDA*Sim.fD;
+        
     case 'PARACEST'        
         Sim.R2B=66.66;
         Sim.dwB=50;
@@ -256,7 +269,7 @@ switch Sim.CESTagent
         Sim.kBA=9000;
         Sim.kAB=Sim.kBA*Sim.fB;
         
-        case 'PARACEST_dota'        
+    case 'PARACEST_dota'        
         Sim.R2B=66.66;
         Sim.dwB=50;
         Sim.fB=1.0*0.01/111;
