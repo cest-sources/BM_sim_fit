@@ -6,7 +6,7 @@
 %% 1.1: create paraemter struct P for simulation or fit
 % simulation parameters
 
-P.analytic      = 1;                    % Optimization type - cases: analytical(1), numerical(0)
+P.analytic      = 0;                    % Optimization type - cases: analytical(1), numerical(0)
 
 P.MT            = 0;                    % 1 = with MT, 0 = no MT pool (MT is always pool C)
 P.MT_lineshape  = 'Gaussian';           % MT lineshape - cases: SuperLorentzian, Gaussian, Lorentzian
@@ -24,7 +24,7 @@ P.dummies=1;  %% or better shots?
 P.TTM_rep         = 0;    
 
 % saturation
-P.FREQ          = 7*gamma_;             % frequency (=B0[T] * gamma)
+P.FREQ          = 7*gamma_;           % frequency (=B0[T] * gamma)
 P.B1            = 10;                   % B1 value in µT
 P.Trec          = 3;                    % recover time in s
 P.spoilf        = 0;                    % spoilingfactor (0 = full spoiling, 1= no spoiling)
@@ -61,26 +61,33 @@ P.c             = 1;                      % this is a free parameter to play aro
 %% 1.2b:QUESP
       vary    = {'B1'};
       clear varyval;
-      varyval(1,:) = [10 15 20 25 30 35]; % e.g. for B1: [0.5 0.75 1 2]
-      
+       varyval(1,:) = [1 5 10 15 20 25 30 35]; % e.g. for B1: [0.5 0.75 1 2]
+%       varyval(1,:) = [0.2:0.4:3]; % e.g. for B1: [0.5 0.75 1 2]
+
 %% 1.3 create simulated data, adds noise and set depending variables and guess good starting values for the fit
 % here the simulation data is created and starting values can be guessed
-w_x=[-80:2:-60 -59:-40 -38:2:38 40:60 62:2:80];  % offset axis
-w_xx=repmat(w_x,numel(varyval));                 % combined offset axis
-P.xZspec=w_x;
+ w_x=[-80:2:-60 -59:-40 -38:2:38 40:60 62:2:80]';  % offset axis
+%  w_x=[-6:0.1:6];  % offset axis
+ w_xx=repmat(w_x,numel(varyval),1);                 % combined offset axis
+ P.xZspec=w_x;
+ 
+%% set start values
 P.analytic=0;
 
 tic
-P.normalized=[-80]
+P.normalized=[]
 warning(sprintf('P.normalized is at offset %.2f ppm',P.normalized));
 
 
 % get start parameters for tissue CEST-agent
 P.tissue    = 'PBS_PARA';
-P.CESTagent = 'PARACEST_wanted';
+P.CESTagent = 'PARACEST';
 P           = getSim(P);    
 expname=sprintf('Simulated data tissue:%s, agent:%s, kBA: %.2f, fB: %7f',P.tissue,P.CESTagent,P.kBA,P.fB);
  
+% P.dwB=[10]
+% warning(sprintf('P.dwB is at offset %.2f ppm',P.dwB));
+
 % XXXXXXXXXXXXXXXXXXXXXXXXXXXX
 % XXXXXXXXXX POOL A XXXXXXXXXX
 % XXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -100,8 +107,8 @@ T.upperA      = [   +1        2*P.R1A       20000*P.R2A     ];
 T.varyB       = [   1           1           1           1           0           0           0           0           ];
 T.dep_varsB   = {   'dwB',      'fB',       'kBA',      'R2B',      'kBD',      'kBE',      'kBF',      'kBG'       };     
 T.startB      = [   P.dwB       P.fB        P.kBA       P.R2B       P.kBD       P.kBE       P.kBF       P.kBG       ];
-T.lowerB      = [   40         P.fB*0.1     50          1/20        0           0           0           0           ];
-T.upperB      = [   60         P.fB*10        1500000        66         10000       10000       10000       10000       ];
+T.lowerB      = [   P.dwB-15         P.fB*0.1     50          1/20        0           0           0           0           ];
+T.upperB      = [   P.dwB+15         P.fB*10        1500000        66         10000       10000       10000       10000       ];
 
 [T.dep_varsB, T.startB, T.lowerB, T.upperB] = selectVars( T.varyB, T.dep_varsB, T.startB, T.lowerB, T.upperB );
 
@@ -118,6 +125,21 @@ T.upperB      = [   60         P.fB*10        1500000        66         10000   
 % [T.dep_varsC, T.startC, T.lowerC, T.upperC] = selectVars( T.varyC, T.dep_varsC, T.startC, T.lowerC, T.upperC );
 % 
 % 
+
+% % XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+% % XXXXXXXXXX POOL D XXXXXXXXXX
+% % XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+% 
+% % 
+% T.varyD       = [ 1         0           1           1           0           0           0           ];
+% T.dep_varsD   = {'dwD',     'fD',       'kDA',      'R2D',      'kDE',      'kDF',      'kDG'       };     
+% T.startD      = [P.dwD      P.fD        P.kDA       P.R2D       P.kDE       P.kDF       P.kDG       ];
+% T.lowerD      = [0        0.0000001     10          1/20        0           0           0           ];
+% T.upperD      = [3        0.01        50000         20         10000       10000       10000       ];
+%  
+% [T.dep_varsD, T.startD, T.lowerD, T.upperD] = selectVars( T.varyD, T.dep_varsD, T.startD, T.lowerD, T.upperD )
+% 
+
 
 % determine which case (--> parameters) is used
 [dep_vars startValue lowerbounds upperbounds] = casedetermination(P,T);
@@ -158,10 +180,9 @@ figure('Name','Noisy data'); plot(w_x,Z_x); title(sprintf('Noisy data, varying %
 %% 2 QUEST and QUESP on experimental data  
 %%2.1: pick QUEST and QUESP data from CESTtab structure
 %first load a Ztab
-rowname='goranT9';                                 % define  the row you want to evaluate    
+rowname='goranT8';                                 % define  the row you want to evaluate    
 expname=Ztab{rowname,'exp'}{1};                 % 
 [w_x, Z_x, w_xx, Z_xx,  varyval, vary, P]= plot_tab(Ztab,rowname,'B1_run');
-
 
 P.normalized=[-80]
 warning(sprintf('P.normalized is at offset %.2f ppm',P.normalized));
@@ -195,8 +216,8 @@ ylabel(dep_vars)
 FIT=f(x,w_x);
 
 for i=1:numel(dep_vars)
-    fprintf('%s: real=%f  fit=%f+-%.5f  start=%f\n',dep_vars{i},P.(dep_vars{i}),x(i),ci(i,2), startValue(i));
-end;
+    fprintf('%s: real=%f  fit=%f±%.5f  start=%f\n',dep_vars{i},P.(dep_vars{i}),x(i),ci(i,2), startValue(i));
+    end;
 
 clear leg FITres;
 figure('Name',expname)
@@ -205,9 +226,11 @@ Z_x=reshape(Z_xx,numel(w_x),numel(varyval));
 FITmat=reshape(FIT,numel(w_x),numel(varyval));
 plot(w_x,Z_x,'.',w_x,FITmat,w_x, Z_x-FITmat);
 title(expname);
-
+[Label, Unit]=getSimLabelUnit()
 for ii=1:numel(startValue) 
-    leg{ii} = (sprintf('%s=%.7f+-%.7f  (start: %.7f)',dep_vars{ii},x(ii),ci(ii,2),startValue(ii)));
+    leg{ii} = (sprintf('%s=%.7f±%.7f %s (start: %.7f)',Label.(dep_vars{ii}),x(ii),ci(ii,2),Unit.(dep_vars{ii}),startValue(ii)));
+    leg{ii} = (sprintf('%s=%s %s (start: %.7f)',Label.(dep_vars{ii}),errorbar_str(x(ii),ci(ii,2)),Unit.(dep_vars{ii}),startValue(ii)));
+            
     FITres.(dep_vars{ii})=x(ii)+j*ci(ii,2);
 end; 
 xlabel(leg);
@@ -234,7 +257,7 @@ Ztab{rowname,'FITres'}{1}.kBA
 
 %% 3.2 single offset preparation
 
-single_offset=48.4;
+single_offset=P.dwB;
 
 clear leg
 figure(42), plot(w_x,Z_x); title(sprintf('check data again! The chosen offset is %.2f ppm',single_offset));
@@ -243,8 +266,6 @@ for ii=1:numel(varyval)
      leg{ii} = (sprintf('%s=%.2f',vary{1},varyval(ii)));
 end; 
 legend(leg);
-
-
 
 ind_lab=find_nearest(w_x,single_offset);
 ind_ref=find_nearest(w_x,-single_offset);
@@ -313,7 +334,7 @@ subplot(4,1,ii);
 h = plot( fitresult, xData, yData ); hold on;
 ci = confint(fitresult);
 ci = ci(2,:)-coeffvalues(fitresult);
-legend( h, sprintf('MTR_{asym}(%.2f ppm) vs. %s',single_offset,vary{1}), sprintf('QUEST fit 1, fb=%.6f+-%.9f, kb=%.2f+-%.2f',fitresult.fb,ci(1),fitresult.kb,ci(2)), 'Location', 'NorthEast' );
+legend( h, sprintf('MTR_{asym}(%.2f ppm) vs. %s',single_offset,vary{1}), sprintf('QUEST fit 1, fb=%.6f±%.9f, kb=%.2f±%.2f',fitresult.fb,ci(1),fitresult.kb,ci(2)), 'Location', 'NorthEast' );
 title(func2str(modelstr));
 % Label axes
 xlabel( vary );
@@ -327,7 +348,7 @@ if strcmp(vary{1},'B1')==0
     error('It seems you varied %s, you need to vary B1 for QUEST',vary{1});
 end;
 
-for ii=1:5
+for ii=1:6
     if ii==1
 MTR=Zref-Zlab;
 % original QUESP
@@ -349,8 +370,16 @@ modelstr= @(fb,kb,R1,x,w1)  fb.*kb.*w1.^2./(w1.^2+kb.^2)./(R1+fb.*kb.*w1.^2./(w1
               modelstr= @(fb,kb,R1,x,w1) (fb.*kb.*w1.^2./(w1.^2+kb.^2)./(R1+fb.*kb.*w1.^2./(w1.^2+kb.^2))-(P.Zi- R1./(R1+fb.*kb.*w1.^2./(w1.^2+kb.^2))).*exp(-(R1+fb.*kb.*w1.^2./(w1.^2+kb.^2)).*x)+(P.Zi-1).*exp(-R1.*x))./(1+(P.Zi-1).*exp(-R1.*x));
         end;
         
-        
     elseif ii==4
+        % general QUESP(t) with Rexmean
+        
+        if isempty(P.normalized)
+            modelstr= @(fb,kb,R1,x,w1) Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi)./(R1+Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi))-(P.Zi- R1./(R1+Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi))).*exp(-(R1+Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi)).*x)+(P.Zi-1).*exp(-R1.*x);
+        else
+              modelstr= @(fb,kb,R1,x,w1) (Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi)./(R1+Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi))-(P.Zi- R1./(R1+Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi))).*exp(-(R1+Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi)).*x)+(P.Zi-1).*exp(-R1.*x))./(1+(P.Zi-1).*exp(-R1.*x));
+        end;
+        
+    elseif ii==5
         
         % inverse QUESP
         MTR=1./Zlab-1./Zref;
@@ -365,8 +394,8 @@ modelstr= @(fb,kb,R1,x,w1)  fb.*kb.*w1.^2./(w1.^2+kb.^2)./(R1+fb.*kb.*w1.^2./(w1
         end;
         % .*(1-exp(-(R1+fb.*kb.*w1.^2./(w1.^2+kb.^2)).*x));
         
-    elseif ii==5
-        
+    elseif ii==6
+        MTR=1./Zlab-1./Zref;
        % WIP use fully integrated Rex
         modelstr= @(fb,kb,R1,x,w1) x./x*P.DC./R1.*Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi) ;
         
@@ -391,11 +420,11 @@ end;
 
 % Plot fit with data.
 figure(1);
-subplot(5,1,ii);
+subplot(6,1,ii);
 h = plot( fitresult, xData, yData ); hold on;
 ci = confint(fitresult);
 ci = ci(2,:)-coeffvalues(fitresult);
-legend( h, sprintf('MTR_{asym}(%.2f ppm) vs. %s',single_offset,vary{1}), sprintf('QUESP fit 1, fb=%.6f+-%.9f, kb=%.2f+-%.2f',fitresult.fb,ci(1),fitresult.kb,ci(2)), 'Location', 'NorthEast' );
+legend( h, sprintf('MTR_{asym}(%.2f ppm) vs. %s',single_offset,vary{1}), sprintf('QUESP fit 1, fb=%.2e±%.1e, kb=%.2f±%.2f',fitresult.fb,ci(1),fitresult.kb,ci(2)), 'Location', 'NorthEast' );
 title(func2str(modelstr));
 % Label axes
 xlabel( vary );
@@ -433,7 +462,6 @@ else
     modelstr= @(fb,kb,R1,xx) R1./(P.DC.*c1)*(1./(fb.*kb) + c22.*kb./fb.*xx );
 [xData, yData] = prepareCurveData( 1./(varyval*gamma_2pi).^2, 1./MTR );
 
-
 end;
 
 
@@ -454,7 +482,7 @@ subplot(3,1,ii);
 h = plot( fitresult, xData, yData ); hold on;
 ci = confint(fitresult);
 ci = ci(2,:)-coeffvalues(fitresult);
-legend( h, sprintf('MTR_{asym}(%.2f ppm) vs. %s',single_offset,vary{1}), sprintf('QUESP fit 1, fb=%.6f+-%.9f, kb=%.2f+-%.2f',fitresult.fb,ci(1),fitresult.kb,ci(2)), 'Location', 'NorthEast' );
+legend( h, sprintf('MTR_{asym}(%.2f ppm) vs. %s',single_offset,vary{1}), sprintf('QUESP fit 1, fb=%.2e±%.1e, kb=%.2f±%.2f',fitresult.fb,ci(1),fitresult.kb,ci(2)), 'Location', 'NorthEast' );
 title(func2str(modelstr));
 % Label axes
 xlabel( vary );
@@ -522,13 +550,14 @@ QUEST3= @(fb,kb,R1,w1,x) fb.*kb.*w1.^2./(w1.^2+kb.^2)./(R1+fb.*kb.*w1.^2./(w1.^2
 % inverse QUESP
 QUESTi1= @(fb,kb,R1,w1,x) fb.*kb.*w1.^2./(w1.^2+kb.^2)./R1*x/x;
 
-tp=Pso.tp;
-for B1=[ 1 10 100]
-figure(2), plot(1:10000,QUEST1(Pso.fB,1:10000,P.R1A,B1*gamma_2pi,tp)); hold on
-figure(2), plot(1:10000,QUEST2(Pso.fB,1:10000,P.R1A,B1*gamma_2pi,tp)); hold on
-figure(2), plot(1:10000,QUEST3(Pso.fB,1:10000,P.R1A,B1*gamma_2pi,tp)); hold on
+tp=2;
+k=1:10000;
+for B1=[ 1 5 25]
+figure(2), plot(k,QUEST1(Pso.fB,k,P.R1A,B1*gamma_2pi,tp)); hold on
+figure(2), plot(k,QUEST2(Pso.fB,k,P.R1A,B1*gamma_2pi,tp)); hold on
+% figure(2), plot(k,QUEST3(Pso.fB,k,P.R1A,B1*gamma_2pi,tp)); hold on
 
-varyval=linspace(1,10000,50);
+ varyval=linspace(1,k(end),50);
 MTR=fast_BM_MTR(Pso,{'kBA'},varyval,B1,tp);
 figure(2), plot(varyval,MTR,'rx'); hold on
 
@@ -548,13 +577,14 @@ QUEST3= @(fb,kb,R1,w1,x) fb.*kb.*w1.^2./(w1.^2+kb.^2)./(R1+fb.*kb.*w1.^2./(w1.^2
 QUESTi1= @(fb,kb,R1,w1,x) fb.*kb.*w1.^2./(w1.^2+kb.^2)./R1*x/x;
 
 tp=100;
-for B1=[ 1 10 100 ]
+k=1:10000;
+for B1=[ 1 5 25 ]
 
-figure(3), plot(1:10000,QUEST1(Pso.fB,1:10000,P.R1A,B1*gamma_2pi,tp)); hold on
-figure(3), plot(1:10000,QUEST2(Pso.fB,1:10000,P.R1A,B1*gamma_2pi,tp)); hold on
-figure(3), plot(1:10000,QUEST3(Pso.fB,1:10000,P.R1A,B1*gamma_2pi,tp)); hold on
+figure(3), plot(k,QUEST1(Pso.fB,k,P.R1A,B1*gamma_2pi,tp)); hold on
+figure(3), plot(k,QUEST2(Pso.fB,k,P.R1A,B1*gamma_2pi,tp)); hold on
+% figure(3), plot(k,QUEST3(Pso.fB,k,P.R1A,B1*gamma_2pi,tp)); hold on
 
- varyval=linspace(1,10000,50);
+ varyval=linspace(1,k(end),50);
 MTR=fast_BM_MTR(Pso,{'kBA'},varyval,B1,tp);
 figure(3), plot(varyval,MTR,'rx'); hold on
 

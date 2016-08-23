@@ -44,7 +44,7 @@ clear II Rex_integrated Rex_cwpe Rex_cwae;
 
 P.xZspec=[-P.dwB P.dwB];
 
-II=1:20;
+II=1:100;
 P.B1=50;
 P.tp    = 0.1; 
 
