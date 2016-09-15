@@ -86,7 +86,7 @@ else
             Rex_mean = Rex_mean_b;
             S.alpha_f_mean = -(Rex_mean_b/P.kBA);
             
-            S.R1rho_hyper_integration=Reff_mean+Rex_mean;
+            S.R1rho_hyper_integration=Reff_mean+Rex_mean; % R1p bar
             S.Rex_hyper_integration=Rex_mean;
 
 
