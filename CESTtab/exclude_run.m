@@ -1,10 +1,9 @@
-function Zrow = norm_run(Zrow,runstr,offset)
+function Zrow = exclude_run(Zrow,runstr,offset)
 %  Ztab('ucl1') = norm_run(Ztab('ucl1'),1,0)
 if ~isempty(offset)
     
 w=Zrow.offset{1};
 subtab=Zrow{:,runstr};
-
 
 offseti=find_nearest(w,offset);
 
@@ -14,11 +13,13 @@ II=1:numel(subtab); % for all run entries
 
 for ii=II
     if ~isempty(subtab{ii})
-        Mnorm=subtab{ii}(offseti);
-        subtab{ii}=subtab{ii}./Mnorm;
-
+       
+        subtab{ii}(offseti)=[]; % delet from Z-spectrum
+        
     end;
 end;
+
+Zrow.offset{1}(offseti)=[]; % delete from offsetlist
 
 Zrow{:,runstr}=subtab;
 else
