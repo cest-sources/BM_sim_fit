@@ -2,6 +2,10 @@ function [ind value]=find_nearest(vec,val,howmany)
 %[ind value]=find_nearest(vec,val,howmany)
 % gives back the index and value in vec nearest to the given val
 
+[vec VECi] =sort(vec);
+
+
+
 rough_index=find((vec>=val),1);
 if isempty(rough_index)
     rough_index=numel(vec);
@@ -30,3 +34,6 @@ if isempty(ind)
     ind=I;
     value=vec(ind)
 end
+
+vec=vec(VECi);
+ind=VECi(ind);
