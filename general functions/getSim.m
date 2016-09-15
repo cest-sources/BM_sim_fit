@@ -249,6 +249,24 @@ switch Sim.CESTagent
     
     case 'none'
         
+    case 'glutamate_7.4'
+        Sim.R2B=66.66;
+        Sim.dwB=3.098651;
+        Sim.fB=0.001331;
+        Sim.kBA=2896;
+        Sim.kAB=Sim.kBA*Sim.fB;
+        
+        Sim.R2A=0.272532;
+        
+    case 'glutamate_6.1'
+        Sim.R2B=66.66;
+        Sim.dwB=3.097;
+        Sim.fB=0.001135;
+        Sim.kBA=639;
+        Sim.kAB=Sim.kBA*Sim.fB;
+        Sim.R2A=0.498;      
+
+        
     case 'alanin_ucl'
         Sim.R2B=66.66;
         Sim.dwB=3;
