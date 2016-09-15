@@ -6,7 +6,7 @@
 %% 1.1: create paraemter struct P for simulation or fit
 % simulation parameters
 
-P.analytic      = 0;                    % Optimization type - cases: analytical(1), numerical(0)
+P.analytic      = 1;                    % Optimization type - cases: analytical(1), numerical(0)
 
 P.MT            = 0;                    % 1 = with MT, 0 = no MT pool (MT is always pool C)
 P.MT_lineshape  = 'Gaussian';           % MT lineshape - cases: SuperLorentzian, Gaussian, Lorentzian
@@ -81,7 +81,7 @@ warning(sprintf('P.normalized is at offset %.2f ppm',P.normalized));
 
 % get start parameters for tissue CEST-agent
 P.tissue    = 'PBS_PARA';
-P.CESTagent = 'PARACEST';
+P.CESTagent = 'glucose';
 P           = getSim(P);    
 expname=sprintf('Simulated data tissue:%s, agent:%s, kBA: %.2f, fB: %7f',P.tissue,P.CESTagent,P.kBA,P.fB);
  
@@ -180,13 +180,19 @@ figure('Name','Noisy data'); plot(w_x,Z_x); title(sprintf('Noisy data, varying %
 %% 2 QUEST and QUESP on experimental data  
 %%2.1: pick QUEST and QUESP data from CESTtab structure
 %first load a Ztab
-rowname='goranT8';                                 % define  the row you want to evaluate    
-expname=Ztab{rowname,'exp'}{1};                 % 
-[w_x, Z_x, w_xx, Z_xx,  varyval, vary, P]= plot_tab(Ztab,rowname,'B1_run');
+Ztab=Ztab_fullglint;
 
-P.normalized=[-80]
+rowname='ta2';                                 % define  the row you want to evaluate    
+expname=Ztab{rowname,'exp'}{1};  
+
+P.normalized=[-4.6]
+ Ztab(rowname,:) = norm_run(Ztab(rowname,:),'B1_run',P.normalized) 
+ Ztab(rowname,:) = exclude_run(Ztab(rowname,:),'B1_run',-5) 
 warning(sprintf('P.normalized is at offset %.2f ppm',P.normalized));
 
+[w_x, Z_x, w_xx, Z_xx,  varyval, vary, PMR]= plot_tab(Ztab,rowname,'B1_run');
+
+P = catstruct(P,PMR);
 %% 3 fitting of the Z_x data (wherever it comes from)
 
 %% 3.1 RUN full BM OPTIMIZATION 

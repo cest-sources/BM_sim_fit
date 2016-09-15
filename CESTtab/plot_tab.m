@@ -91,6 +91,7 @@ end;
 Z_xx=Z_xx';
 
 Z_x=reshape(Z_xx,numel(w_x),numel(varyval));
+P.xZspec=w_x;
 
 end
 
