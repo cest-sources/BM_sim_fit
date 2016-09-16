@@ -66,14 +66,18 @@ P.c             = 1;                        %XX
 
 %% modify Ztab
 % to exclude offsets use this code
-Ztab('ta5','B1_run') = norm_run(Ztab('ta5','B1_run'),3,1);
-Ztab{'ta5','offset'}{1}(1)=[];
+Ztab=Ztab_fullglint;
 
+rowname='ta2';                                 % define  the row you want to evaluate    
+expname=Ztab{rowname,'exp'}{1}; 
+
+Ztab(rowname,:) = norm_run(Ztab(rowname,:),'B1_run',P.normalized) 
+Ztab(rowname,:) = exclude_run(Ztab(rowname,:),'B1_run',-5) 
 
 
 %% READ DATA FROM Ztab
 clear vary varyval
-[w_x, Z_x, w_xx, Z_xx, varyval, vary, Ptab]= plot_tab(Ztab,'ta5','B1_run');
+[w_x, Z_x, w_xx, Z_xx, varyval, vary, Ptab]= plot_tab(Ztab,rowname,'B1_run');
 
 P.xZspec=w_x;
 P.tp=Ptab.tsat;
@@ -224,7 +228,7 @@ if P.asym_fit % if u fit an Asym-spectrum
     plot(x_asym_all,y_asym_all,'x',x_asym_all,FIT,x_asym_all,y_asym_all-FIT); hold on;
     clear leg;
 else % if u fit a Z-spectrum
-    plot(w_xx,Z,'x',w_xx,FIT,w_xx,Z-FIT); hold on;
+    plot(w_xx,Z_xx,'x',w_xx,FIT,w_xx,Z_xx-FIT); hold on;
     clear leg;
     set(gca,'XDir','reverse');
 end
@@ -260,7 +264,7 @@ options = optimset('PlotFcns',{@optimplotfval},'TolFun',1e-8,'MaxIter',400,'Disp
 if P.asym_fit
     [x resnorm RES,EXITFLAG,OUTPUT,LAMBDA,JACOBIAN] = lsqcurvefit(f,startValue,x_asym_all,y_asym_all,lowerbounds,upperbounds,options);
 else
-    [x resnorm RES,EXITFLAG,OUTPUT,LAMBDA,JACOBIAN] = lsqcurvefit(f,startValue,w_xx,Z,lowerbounds,upperbounds,options);
+    [x resnorm RES,EXITFLAG,OUTPUT,LAMBDA,JACOBIAN] = lsqcurvefit(f,startValue,w_xx,Z_xx,lowerbounds,upperbounds,options);
 end
 
 [ci, varb, corrb, varinf] = nlparci(x,resnorm,JACOBIAN,0.5);
@@ -289,7 +293,7 @@ figure(2000)
 if P.asym_fit
     plot(x_asym_all,y_asym_all,'x',x_asym_all,FIT);
 else
-    plot(w_xx,Z,'x',w_xx,FIT,w_xx,Z-FIT);
+    plot(w_xx,Z_xx,'x',w_xx,FIT,w_xx,Z_xx-FIT);
 end
 
 for ii=1:numel(startValue) 
