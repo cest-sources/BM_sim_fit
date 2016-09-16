@@ -18,19 +18,19 @@ P.Rex_sol       = 'Hyper';              % cases: 'Hyper', 'Lorentz' , 'miniloren
 % readout
 P.TR  = 3/1000;
 P.linestomeasure=1;
-P.flipangle= 14;
-P.readout='bssfp';
+P.flipangle= 90;
+P.readout='FID';
 P.dummies=1;  %% or better shots?
 P.TTM_rep         = 0;    
 
 % saturation
-P.FREQ          = 7*gamma_;           % frequency (=B0[T] * gamma)
+P.FREQ          = 9.4*gamma_;           % frequency (=B0[T] * gamma)
 P.B1            = 10;                   % B1 value in µT
-P.Trec          = 3;                    % recover time in s
+P.Trec          = 10;                    % recover time in s
 P.spoilf        = 0;                    % spoilingfactor (0 = full spoiling, 1= no spoiling)
-P.Zi            = 0;                    % initial magnetisation (should be between -1 and +1)
+P.Zi     = 1-exp(-P.R1A*P.Trec);        % initial magnetisation (should be between -1 and +1)
 
-P.pulsed        = 0;                    % 0 = cw saturation, 1 = pulsed saturation
+P.pulsed        = 1;                    % 0 = cw saturation, 1 = pulsed saturation
 
 if P.pulsed
     P.shape = 'gauss_ucl';              % cases: SPINLOCK, seq_gauss, block, block_trap, gauss, sech, sinc_1, sinc_2, sinc_3, sinc_4
@@ -61,13 +61,14 @@ P.c             = 1;                      % this is a free parameter to play aro
 %% 1.2b:QUESP
       vary    = {'B1'};
       clear varyval;
-       varyval(1,:) = [1 5 10 15 20 25 30 35]; % e.g. for B1: [0.5 0.75 1 2]
+%       varyval(1,:) = [10 15 20 25 30 35]; % e.g. for B1: [0.5 0.75 1 2]
 %       varyval(1,:) = [0.2:0.4:3]; % e.g. for B1: [0.5 0.75 1 2]
-
+      
+     varyval(1,:)= [300 600 900 1200 1500 1800 2100 2400 2700 3000]/360/(0.05*gamma_);
 %% 1.3 create simulated data, adds noise and set depending variables and guess good starting values for the fit
 % here the simulation data is created and starting values can be guessed
  w_x=[-80:2:-60 -59:-40 -38:2:38 40:60 62:2:80]';  % offset axis
-%  w_x=[-6:0.1:6];  % offset axis
+ w_x=[-6:0.1:6];  % offset axis
  w_xx=repmat(w_x,numel(varyval),1);                 % combined offset axis
  P.xZspec=w_x;
  
@@ -80,8 +81,8 @@ warning(sprintf('P.normalized is at offset %.2f ppm',P.normalized));
 
 
 % get start parameters for tissue CEST-agent
-P.tissue    = 'PBS_PARA';
-P.CESTagent = 'PARACEST_dota';
+P.tissue    = 'PBS_eleni';
+P.CESTagent = 'glutamate_6.1';
 P           = getSim(P);    
 expname=sprintf('Simulated data tissue:%s, agent:%s, kBA: %.2f, fB: %7f',P.tissue,P.CESTagent,P.kBA,P.fB);
  
@@ -95,7 +96,7 @@ expname=sprintf('Simulated data tissue:%s, agent:%s, kBA: %.2f, fB: %7f',P.tissu
 T.varyA       = [   1          0           1       ];
 T.dep_varsA   = {   'dwA',      'R1A',      'R2A'   };                  % {'dwA','R1A','R2A'};
 T.startA      = [   P.dwA       P.R1A       P.R2A   ];                  % [P.dwA P.R1A P.R2A];
-T.lowerA      = [   -1        1/4*P.R1A     1/3*P.R2A     ];
+T.lowerA      = [   -1        1/4*P.R1A     1/10*P.R2A     ];
 T.upperA      = [   +1        2*P.R1A       20000*P.R2A     ];
 
 [T.dep_varsA, T.startA, T.lowerA, T.upperA] = selectVars( T.varyA, T.dep_varsA, T.startA, T.lowerA, T.upperA );
@@ -107,8 +108,8 @@ T.upperA      = [   +1        2*P.R1A       20000*P.R2A     ];
 T.varyB       = [   1           1           1           1           0           0           0           0           ];
 T.dep_varsB   = {   'dwB',      'fB',       'kBA',      'R2B',      'kBD',      'kBE',      'kBF',      'kBG'       };     
 T.startB      = [   P.dwB       P.fB        P.kBA       P.R2B       P.kBD       P.kBE       P.kBF       P.kBG       ];
-T.lowerB      = [   P.dwB-15         P.fB*0.1     50          1/20        0           0           0           0           ];
-T.upperB      = [   P.dwB+15         P.fB*10        1500000        66         10000       10000       10000       10000       ];
+T.lowerB      = [   P.dwB-15    P.fB*0.01     5          1/20        0           0           0           0           ];
+T.upperB      = [   P.dwB+15    P.fB*100    1500000        66         10000       10000       10000       10000       ];
 
 [T.dep_varsB, T.startB, T.lowerB, T.upperB] = selectVars( T.varyB, T.dep_varsB, T.startB, T.lowerB, T.upperB );
 
@@ -144,14 +145,14 @@ T.upperB      = [   P.dwB+15         P.fB*10        1500000        66         10
 % determine which case (--> parameters) is used
 [dep_vars startValue lowerbounds upperbounds] = casedetermination(P,T);
 
-
+tic
 % plot your measured and simulated data (uses starting point values)
 if P.analytic
         GUESS = conv_ana(startValue,w_x,P,dep_vars,vary,varyval);
 else
         GUESS = conv_num(startValue,w_x,P,dep_vars,vary,varyval);
 end
-
+toc
 % plot "1st-guess" with deviations from data points
 figure(2001),
 
@@ -180,19 +181,22 @@ figure('Name','Noisy data'); plot(w_x,Z_x); title(sprintf('Noisy data, varying %
 %% 2 QUEST and QUESP on experimental data  
 %%2.1: pick QUEST and QUESP data from CESTtab structure
 %first load a Ztab
-Ztab=Ztab_para;
+Ztab=Ztab_glutamate;
 
-rowname='goranT3';                                 % define  the row you want to evaluate    
+rowname='glu100_6.7';                                 % define  the row you want to evaluate    
 expname=Ztab{rowname,'exp'}{1};  
 
-P.normalized=[-80]
+P.normalized=[-6]
  Ztab(rowname,:) = norm_run(Ztab(rowname,:),'B1_run',P.normalized) 
-%  Ztab(rowname,:) = exclude_run(Ztab(rowname,:),'B1_run',-80) 
+%  Ztab(rowname,:) = exclude_run(Ztab(rowname,:),'B1_run',-5) 
 warning(sprintf('P.normalized is at offset %.2f ppm',P.normalized));
 
 [w_x, Z_x, w_xx, Z_xx,  varyval, vary, Ptab]= plot_tab(Ztab,rowname,'B1_run');
 
 P = catstruct(P,Ptab);
+
+%% 3 fitting of the Z_x data (wherever it comes from)
+
 %% 3 fitting of the Z_x data (wherever it comes from)
 
 %% 3.1 RUN full BM OPTIMIZATION 
@@ -226,12 +230,12 @@ for i=1:numel(dep_vars)
     end;
 
 clear leg FITres;
-figure('Name',expname)
+figure('Name',[expname ' : ' rowname])
 
 Z_x=reshape(Z_xx,numel(w_x),numel(varyval));
 FITmat=reshape(FIT,numel(w_x),numel(varyval));
 plot(w_x,Z_x,'.',w_x,FITmat,w_x, Z_x-FITmat);
-title(expname);
+title([expname ' : ' rowname]);
 [Label, Unit]=getSimLabelUnit()
 for ii=1:numel(startValue) 
     leg{ii} = (sprintf('%s=%.7f±%.7f %s (start: %.7f)',Label.(dep_vars{ii}),x(ii),ci(ii,2),Unit.(dep_vars{ii}),startValue(ii)));
@@ -263,7 +267,7 @@ Ztab{rowname,'FITres'}{1}.kBA
 
 %% 3.2 single offset preparation
 
-single_offset=x(strcmp(dep_vars,'dwB')>0);
+single_offset=3.0;
 
 clear leg
 figure(42), plot(w_x,Z_x); title(sprintf('check data again! The chosen offset is %.2f ppm',single_offset));
@@ -380,9 +384,9 @@ modelstr= @(fb,kb,R1,x,w1)  fb.*kb.*w1.^2./(w1.^2+kb.^2)./(R1+fb.*kb.*w1.^2./(w1
         % general QUESP(t) with Rexmean
         
         if isempty(P.normalized)
-            modelstr= @(fb,kb,R1,x,w1) Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi)./(R1+Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi))-(P.Zi- R1./(R1+Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi))).*exp(-(R1+Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi)).*x)+(P.Zi-1).*exp(-R1.*x);
+            modelstr= @(fb,kb,R1,x,w1) P.DC*Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi)./(R1+P.DC*Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi))-(P.Zi- R1./(R1+P.DC*Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi))).*exp(-(R1+P.DC*Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi)).*x)+(P.Zi-1).*exp(-R1.*x);
         else
-              modelstr= @(fb,kb,R1,x,w1) (Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi)./(R1+Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi))-(P.Zi- R1./(R1+Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi))).*exp(-(R1+Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi)).*x)+(P.Zi-1).*exp(-R1.*x))./(1+(P.Zi-1).*exp(-R1.*x));
+              modelstr= @(fb,kb,R1,x,w1) (P.DC*Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi)./(R1+P.DC*Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi))-(P.Zi- R1./(R1+P.DC*Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi))).*exp(-(R1+P.DC*Rex_mean(P,P.R2B,fb,kb,w1./gamma_2pi)).*x)+(P.Zi-1).*exp(-R1.*x))./(1+(P.Zi-1).*exp(-R1.*x));
         end;
         
     elseif ii==5
@@ -413,9 +417,9 @@ modelstr= @(fb,kb,R1,x,w1)  fb.*kb.*w1.^2./(w1.^2+kb.^2)./(R1+fb.*kb.*w1.^2./(w1
 ft = fittype(modelstr, 'problem', {'R1','x'}, 'independent', {'w1'}, 'dependent', 'y' ); 
 opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
 opts.Display = 'Off';
-opts.Lower = [0.0000135 0];
+opts.Lower      = [0.0000135 0];
 opts.StartPoint = [0.000135 4000];
-opts.Upper = [0.0135 150000];
+opts.Upper      = [0.0135 150000];
 
 % Fit model to data.
 if P.pulsed
@@ -595,4 +599,3 @@ MTR=fast_BM_MTR(Pso,{'kBA'},varyval,B1,tp);
 figure(3), plot(varyval,MTR,'rx'); hold on
 
 end;
-

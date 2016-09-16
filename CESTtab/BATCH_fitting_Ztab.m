@@ -70,7 +70,7 @@ Ztab=Ztab_fullglint;
 
 rowname='ta2';                                 % define  the row you want to evaluate    
 expname=Ztab{rowname,'exp'}{1}; 
-
+P.normalized=[-4.6];
 Ztab(rowname,:) = norm_run(Ztab(rowname,:),'B1_run',P.normalized) 
 Ztab(rowname,:) = exclude_run(Ztab(rowname,:),'B1_run',-5) 
 
@@ -86,8 +86,6 @@ P.Zi=cos(Ptab.readout_flipangle*pi/180);
 P.B1=Ptab.B1;
 P.FREQ=Ptab.B0*gamma_;
 
-P.normalized=-4.6;
-
 P.shape         = 'block';           % cases: SPINLOCK, seq_gauss, block, block_trap, gauss, sech, sinc_1, sinc_2, sinc_3, sinc_4
 P.pulsed        = 0;                    % 0 = cw saturation, 1 = pulsed saturation
 
@@ -101,9 +99,9 @@ end;
 P.shape         = 'SPINLOCK';
 P.TTM_rep=0;
 P.dummies=1;
-P.analytic=0;
-P.flipangle=10;
-P.readout='bssfp';
+P.analytic=1;
+P.flipangle=90;
+P.readout='FID';
 P.linestomeasure=1;
 
 

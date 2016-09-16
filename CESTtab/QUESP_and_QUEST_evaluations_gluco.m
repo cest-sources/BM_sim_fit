@@ -80,8 +80,8 @@ warning(sprintf('P.normalized is at offset %.2f ppm',P.normalized));
 
 
 % get start parameters for tissue CEST-agent
-P.tissue    = 'PBS_PARA';
-P.CESTagent = 'PARACEST_dota';
+P.tissue    = 'PBS_telaviv';
+P.CESTagent = 'glucose_ta';
 P           = getSim(P);    
 expname=sprintf('Simulated data tissue:%s, agent:%s, kBA: %.2f, fB: %7f',P.tissue,P.CESTagent,P.kBA,P.fB);
  
@@ -131,13 +131,13 @@ T.upperB      = [   P.dwB+15         P.fB*10        1500000        66         10
 % % XXXXXXXXXXXXXXXXXXXXXXXXXXXX
 % 
 % % 
-% T.varyD       = [ 1         0           1           1           0           0           0           ];
-% T.dep_varsD   = {'dwD',     'fD',       'kDA',      'R2D',      'kDE',      'kDF',      'kDG'       };     
-% T.startD      = [P.dwD      P.fD        P.kDA       P.R2D       P.kDE       P.kDF       P.kDG       ];
-% T.lowerD      = [0        0.0000001     10          1/20        0           0           0           ];
-% T.upperD      = [3        0.01        50000         20         10000       10000       10000       ];
-%  
-% [T.dep_varsD, T.startD, T.lowerD, T.upperD] = selectVars( T.varyD, T.dep_varsD, T.startD, T.lowerD, T.upperD )
+T.varyD       = [ 1         1           1           1           0           0           0           ];
+T.dep_varsD   = {'dwD',     'fD',       'kDA',      'R2D',      'kDE',      'kDF',      'kDG'       };     
+T.startD      = [P.dwD      P.fD        P.kDA       P.R2D       P.kDE       P.kDF       P.kDG       ];
+T.lowerD      = [0        0.0000001     10          1/20        0           0           0           ];
+T.upperD      = [3        0.01        50000         20         10000       10000       10000       ];
+ 
+[T.dep_varsD, T.startD, T.lowerD, T.upperD] = selectVars( T.varyD, T.dep_varsD, T.startD, T.lowerD, T.upperD )
 % 
 
 
@@ -180,14 +180,14 @@ figure('Name','Noisy data'); plot(w_x,Z_x); title(sprintf('Noisy data, varying %
 %% 2 QUEST and QUESP on experimental data  
 %%2.1: pick QUEST and QUESP data from CESTtab structure
 %first load a Ztab
-Ztab=Ztab_para;
+Ztab=Ztab_fullglint;
 
-rowname='goranT3';                                 % define  the row you want to evaluate    
+rowname='ta2';                                 % define  the row you want to evaluate    
 expname=Ztab{rowname,'exp'}{1};  
 
-P.normalized=[-80]
+P.normalized=[-4.6]
  Ztab(rowname,:) = norm_run(Ztab(rowname,:),'B1_run',P.normalized) 
-%  Ztab(rowname,:) = exclude_run(Ztab(rowname,:),'B1_run',-80) 
+ Ztab(rowname,:) = exclude_run(Ztab(rowname,:),'B1_run',-5) 
 warning(sprintf('P.normalized is at offset %.2f ppm',P.normalized));
 
 [w_x, Z_x, w_xx, Z_xx,  varyval, vary, Ptab]= plot_tab(Ztab,rowname,'B1_run');
@@ -198,6 +198,7 @@ P = catstruct(P,Ptab);
 %% 3.1 RUN full BM OPTIMIZATION 
 % you need a startvalue, run 1.3 first!
 P.analytic=1;  % set this to 1 if analytic fit should be used, numeric =0 can take forever
+P.n_cest_pool=2;
 
 try close 2001 % close "1st-guess"
 end
@@ -264,6 +265,9 @@ Ztab{rowname,'FITres'}{1}.kBA
 %% 3.2 single offset preparation
 
 single_offset=x(strcmp(dep_vars,'dwB')>0);
+
+single_offset=3;
+
 
 clear leg
 figure(42), plot(w_x,Z_x); title(sprintf('check data again! The chosen offset is %.2f ppm',single_offset));
