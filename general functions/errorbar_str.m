@@ -33,7 +33,12 @@ if isinf(val) || isnan(val)
 end
 
 if errorbar == 0
-    string = [two_sf(val) ' +/- 0'];
+    string = [two_sf(val) ' ± 0'];
+    return
+end
+
+if isnan(errorbar)
+    string = [two_sf(val) ' ± 0'];
     return
 end
 
