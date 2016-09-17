@@ -37,14 +37,14 @@ switch Sim.tissue
         Sim.R1A=1/T1;
         Sim.R2A=1/T2;
         
-     case 'PBS_PARA' %Zaiss: P. 87 notebook #III
+     case 'PBS_PARA' 
         T1=3.34;
         T2=2;
         Sim.dwA=0;
         Sim.R1A=1/T1;
         Sim.R2A=1/T2;
         
-     case 'PBS_PARA_dota' %Zaiss: P. 87 notebook #III
+     case 'PBS_PARA_dota' 
         T1=3;
         T2=0.537;
         Sim.dwA=0;
