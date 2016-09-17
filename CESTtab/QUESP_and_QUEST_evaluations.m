@@ -72,7 +72,7 @@ P.c             = 1;                      % this is a free parameter to play aro
  P.xZspec=w_x;
  
 %% set start values
-P.analytic=0;
+P.analytic=1;
 
 tic
 P.normalized=[]
@@ -81,7 +81,7 @@ warning(sprintf('P.normalized is at offset %.2f ppm',P.normalized));
 
 % get start parameters for tissue CEST-agent
 P.tissue    = 'PBS_PARA';
-P.CESTagent = 'glucose';
+P.CESTagent = 'PARACEST_dota';
 P           = getSim(P);    
 expname=sprintf('Simulated data tissue:%s, agent:%s, kBA: %.2f, fB: %7f',P.tissue,P.CESTagent,P.kBA,P.fB);
  
@@ -180,19 +180,19 @@ figure('Name','Noisy data'); plot(w_x,Z_x); title(sprintf('Noisy data, varying %
 %% 2 QUEST and QUESP on experimental data  
 %%2.1: pick QUEST and QUESP data from CESTtab structure
 %first load a Ztab
-Ztab=Ztab_fullglint;
+Ztab=Ztab_para;
 
-rowname='ta2';                                 % define  the row you want to evaluate    
+rowname='goranT3';                                 % define  the row you want to evaluate    
 expname=Ztab{rowname,'exp'}{1};  
 
-P.normalized=[-4.6]
+P.normalized=[-80]
  Ztab(rowname,:) = norm_run(Ztab(rowname,:),'B1_run',P.normalized) 
- Ztab(rowname,:) = exclude_run(Ztab(rowname,:),'B1_run',-5) 
+%  Ztab(rowname,:) = exclude_run(Ztab(rowname,:),'B1_run',-80) 
 warning(sprintf('P.normalized is at offset %.2f ppm',P.normalized));
 
-[w_x, Z_x, w_xx, Z_xx,  varyval, vary, PMR]= plot_tab(Ztab,rowname,'B1_run');
+[w_x, Z_x, w_xx, Z_xx,  varyval, vary, Ptab]= plot_tab(Ztab,rowname,'B1_run');
 
-P = catstruct(P,PMR);
+P = catstruct(P,Ptab);
 %% 3 fitting of the Z_x data (wherever it comes from)
 
 %% 3.1 RUN full BM OPTIMIZATION 
@@ -263,7 +263,7 @@ Ztab{rowname,'FITres'}{1}.kBA
 
 %% 3.2 single offset preparation
 
-single_offset=P.dwB;
+single_offset=x(strcmp(dep_vars,'dwB')>0);
 
 clear leg
 figure(42), plot(w_x,Z_x); title(sprintf('check data again! The chosen offset is %.2f ppm',single_offset));
