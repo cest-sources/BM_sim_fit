@@ -4,7 +4,7 @@
 %%(2) CESTtab structured data (go directly to 2 if you want to do so)
 
 %% 1.1: create paraemter struct P for simulation or fit
-% simulation parameters
+% simulation parameters sfdsf
 
 P.analytic      = 1;                    % Optimization type - cases: analytical(1), numerical(0)
 
