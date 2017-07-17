@@ -23,14 +23,26 @@ P.kAF = P.kFA*P.fF;
 P.dwG = P.dwA+P.dwG;
 P.kAG = P.kGA*P.fG;
 
-
+   if ~iscell(vary) % make sure both old an new def of vary work
+            temp=vary;
+            clear vary
+            vary{1}=temp; clear temp;
+           %warning('please use new notation for vary: ist a struct now P.vary{1}=B1');
+      
+        end;
 
 if multiple
     zspec=[];
     xZspec=[];
     for ii=1:numel(val(1,:))
+        
+            
         for jj = 1:numel(vary)
-            P.(vary{jj}) = val(jj,ii)*P.c;
+            try
+                P.(vary{jj}) = val(jj,ii)*P.c;
+            catch
+                P.(vary) = val(jj,ii)*P.c;
+            end;
             P.td=calc_td(P.tp,P.DC);
         end
             Msim    = NUMERIC_SIM(P);
