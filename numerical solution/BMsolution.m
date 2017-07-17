@@ -9,7 +9,20 @@ end
 
 % set exchange rates of unused pools to zero
 switch x0(1,4)                          % (x0(1,4) = Sim.n_cest_pool)
-    
+   
+    case 0
+        x0(3,2) = 0; y0(14) = 1e-16;        % (x0(3,2) = Sim.kBA, y0(14) = Sim.fB)
+        x0(5,2) = 0; y0(16) = 1e-16;        % (x0(5,2) = Sim.kDA, y0(16) = Sim.fD)
+        x0(6,2) = 0; y0(17) = 1e-16;        % (x0(6,2) = Sim.kEA, y0(17) = Sim.fE)
+        x0(7,2) = 0; y0(18) = 1e-16;        % (x0(7,2) = Sim.kFA, y0(18) = Sim.fF)
+        x0(8,2) = 0; y0(19) = 1e-16;        % (x0(8,2) = Sim.kGA, y0(19) = Sim.fG)
+
+        % set intramolecular exchange rates of unused pools to zero
+        x0(3,8) = 0; x0(5,8) = 0; x0(6,8) = 0; x0(7,8) = 0;
+        x0(3,7) = 0; x0(5,7) = 0; x0(6,7) = 0;
+        x0(3,6) = 0; x0(5,6) = 0;
+        x0(3,5) = 0;
+        
     case 1
         x0(5,2) = 0; y0(16) = 1e-16;        % (x0(5,2) = Sim.kDA, y0(16) = Sim.fD)
         x0(6,2) = 0; y0(17) = 1e-16;        % (x0(6,2) = Sim.kEA, y0(17) = Sim.fE)
