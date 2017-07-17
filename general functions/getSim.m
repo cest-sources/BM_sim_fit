@@ -28,7 +28,6 @@ Sim.kEF=0; Sim.kEG=0;
 Sim.kFG=0;
 
 
-
 switch Sim.tissue
     case 'simulation' % schuenke
         T1=0.100;
@@ -52,11 +51,16 @@ switch Sim.tissue
         Sim.R2A=1/T2;
         
         
-        
+     case 'PBS_unito' %Zaiss: P. 87 notebook #III
+        T1=3;
+        T2=1.5;
+        Sim.dwA=0;
+        Sim.R1A=1/T1;
+        Sim.R2A=1/T2;
         
      case 'PBS_eleni' %Zaiss: P. 87 notebook #III
-        T1=3;
-        T2=1;
+        T1=3.3;
+        T2=1.2;
         Sim.dwA=0;
         Sim.R1A=1/T1;
         Sim.R2A=1/T2;
@@ -300,6 +304,27 @@ switch Sim.CESTagent
         Sim.fB=1.0*0.015/111;
         Sim.kBA=1000;
         Sim.kAB=Sim.kBA*Sim.fB;
+        
+        
+     case 'PARACEST_3pool'     
+         
+        Sim.R2B=66.66;
+        Sim.dwB=45;
+        Sim.fB=1.0*0.015/111;
+        Sim.kBA=2000;
+        Sim.kAB=Sim.kBA*Sim.fB;
+        
+        Sim.R2D=66.66;
+        Sim.dwD=54;
+        Sim.fD=1.0*0.015/111;
+        Sim.kDA=10000;
+        Sim.kAD=Sim.kDA*Sim.fD;
+        
+        Sim.R2E=66.66;
+        Sim.dwE=3.5;
+        Sim.fE=4*0.015/111;
+        Sim.kEA=50;
+        Sim.kAE=Sim.kEA*Sim.fE;
         
     case 'gagOH'        %Zaiss: Singh2011
         Sim.R2B=66.66;
@@ -583,7 +608,7 @@ switch Sim.CESTagent
         
      case 'glucose_eleni'     % elenis concentrationen und peak positions 
         % Pool B
-        Sim.dwB=1.28;
+        Sim.dwB=1.28; % ppm 
         Sim.R2B=120;
         Sim.fB=0.0027; % 0.0045/5 bei 100mM und 5 austauschenden Protonen
         Sim.kBA=1000;
@@ -610,6 +635,188 @@ switch Sim.CESTagent
         Sim.dwG=1.2;
         Sim.R2G=66.66;
         Sim.fG=0.0009; % 0.0045/5 bei 100mM und 5 austauschenden Protonen
+        Sim.kGA=5000;
+
+    
+    case 'glucose_unito'     % elenis concentrationen und peak positions 
+        
+        % Pool B
+        Sim.dwB=0.66;
+        Sim.R2B=66.66;
+        Sim.fB= 0.00018018; % 20mM / 110mM
+        Sim.kBA=1000;
+        
+        % Pool D
+        Sim.dwD=1.28; % ppm 
+        Sim.R2D=50;
+        Sim.fD=3*0.00018018; 
+        Sim.kDA=1500;
+        
+        % Pool E
+        Sim.dwE=2.08;
+        Sim.R2E=66.66;
+        %Sim.fE=0.37* 0.00018018;
+        Sim.anomer=0.37;
+        Sim.fE=Sim.anomer * 0.00018018;
+        Sim.kEA=1000;
+        
+        % Pool F
+        Sim.dwF=2.88;
+        Sim.R2F=66.66;
+        %Sim.Ff=0.67 * 0.00018018;
+        Sim.fF=(1-Sim.anomer)*0.00018018; 
+        Sim.kFA=1000;
+        
+        % Pool G
+        Sim.dwG=1.2;
+        Sim.R2G=66.66;
+        Sim.fG=0.00018018 % 0.0045/5 bei 100mM und 5 austauschenden Protonen
+        Sim.kGA=5000;
+
+    case 'glucose_physio1' % from multi-pH fit
+        
+        % Pool B
+        Sim.dwB=0.66;
+        Sim.R2B=50;
+        Sim.fB= 0.00018018; % 20mM / 110mM
+        Sim.kBA=1200;
+        
+        % Pool D
+        Sim.dwD=1.28; % ppm 
+        Sim.R2D=50;
+        Sim.fD=3*0.00018018; 
+        Sim.kDA=2997;
+        
+        % Pool E
+        Sim.dwE=2.08;
+        Sim.R2E=50;
+        %Sim.fE=0.37* 0.00018018;
+        Sim.anomer=0.7;
+        Sim.fE=Sim.anomer * 0.00018018;
+        Sim.kEA=3543;
+        
+        % Pool F
+        Sim.dwF=2.88;
+        Sim.R2F=50;
+        %Sim.Ff=0.67 * 0.00018018;
+        Sim.fF=(1-Sim.anomer)*0.00018018; 
+        Sim.kFA=5863;
+        
+    case 'glucose_physioTpH002' % from multi-pH-multi-T fit
+        
+        % Pool B
+        Sim.dwB=0.66;
+        Sim.R2B=50;
+        Sim.fB= 0.00018018; % 20mM / 110mM
+        Sim.kBA=46000;
+        
+        % Pool D
+        Sim.dwD=1.28; % ppm 
+        Sim.R2D=50;
+        Sim.fD=3*0.00018018; 
+        Sim.kDA=3700;
+        
+        % Pool E
+        Sim.dwE=2.08;
+        Sim.R2E=50;
+        %Sim.fE=0.37* 0.00018018;
+        Sim.anomer=0.37;
+        Sim.fE=Sim.anomer * 0.00018018;
+        Sim.kEA=3600;
+        
+        % Pool F
+        Sim.dwF=2.88;
+        Sim.R2F=50;
+        %Sim.Ff=0.67 * 0.00018018;
+        Sim.fF=(1-Sim.anomer)*0.00018018; 
+        Sim.kFA=50000;
+        
+    case 'glucose_physio2'
+        
+        % Pool B
+        Sim.dwB=0.66;
+        Sim.R2B=50;
+        Sim.fB= 0.00018018; % 20mM / 110mM
+        Sim.kBA=800;
+        
+        % Pool D
+        Sim.dwD=1.28; % ppm 
+        Sim.R2D=50;
+        Sim.fD=3*0.00018018; 
+        Sim.kDA=2000;
+        
+        % Pool E
+        Sim.dwE=2.08;
+        Sim.R2E=50;
+        %Sim.fE=0.37* 0.00018018;
+        Sim.anomer=0.7;
+        Sim.fE=Sim.anomer * 0.00018018;
+        Sim.kEA=2000;
+        
+        % Pool F
+        Sim.dwF=2.88;
+        Sim.R2F=50;
+        %Sim.Ff=0.67 * 0.00018018;
+        Sim.fF=(1-Sim.anomer)*0.00018018; 
+        Sim.kFA=3500;
+        
+    case 'Carlos_3pool'
+        
+         % Pool B
+        Sim.dwB=9;
+        Sim.R2B=50;
+        Sim.fB= 0.00018018; % 20mM / 110mM
+        Sim.kBA=500;
+        
+        % Pool D
+        Sim.dwD=14; % ppm 
+        Sim.R2D=50;
+        Sim.fD=3*0.00018018; 
+        Sim.kDA=500;
+        
+        % Pool E
+        Sim.dwE=15;
+        Sim.R2E=50;
+        %Sim.fE=0.37* 0.00018018;
+        Sim.anomer=0.7;
+        Sim.fE=Sim.anomer * 0.00018018;
+        Sim.kEA=2000;
+        
+      
+        
+    case 'OMG_unito'     % elenis concentrationen und peak positions 
+        
+        % Pool B
+        Sim.dwB=0.66;
+        Sim.R2B=66.66;
+        Sim.fB= 0.00018018; % 20mM / 110mM
+        Sim.kBA=1000;
+        
+        % Pool D
+        Sim.dwD=1.28; % ppm 
+        Sim.R2D=50;
+        Sim.fD=2*0.00018018; 
+        Sim.kDA=1500;
+        
+        % Pool E
+        Sim.dwE=2.08;
+        Sim.R2E=66.66;
+        %Sim.fE=0.37* 0.00018018;
+        Sim.anomer=0.37;
+        Sim.fE=Sim.anomer * 0.00018018;
+        Sim.kEA=1000;
+        
+        % Pool F
+        Sim.dwF=2.88;
+        Sim.R2F=66.66;
+        %Sim.Ff=0.67 * 0.00018018;
+        Sim.fF=(1-Sim.anomer)*0.00018018; 
+        Sim.kFA=1000;
+        
+        % Pool G
+        Sim.dwG=1.2;
+        Sim.R2G=66.66;
+        Sim.fG=0.00018018 % 0.0045/5 bei 100mM und 5 austauschenden Protonen
         Sim.kGA=5000;
         
     case 'glucose_ta'     % elenis concentrationen und peak positions 

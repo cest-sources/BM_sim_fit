@@ -15,6 +15,8 @@ Label.B1='B_1';
 Label.Trec='T_{rec}';
 Label.Zi='Z_i';
 Label.FREQ='B_0';
+Label.shape='pulse shape';
+Unit.shape='';
 
 Label.TR  = 'TR';
 Label.linestomeasure='linestomeasure';
@@ -100,6 +102,46 @@ Label.kEG = 'k_{EG}';
 
 Label.kFG = 'k_{FG}';
 
+Label.anomer = 'anomer';
+
+% pH exchaneg constants
+Label.kB0 = 'k_{B0}';
+Label.kB1 = 'k_{B1}';
+Label.kD0 = 'k_{D0}';
+Label.kD1 = 'k_{D1}';
+Label.kE0 = 'k_{E0}';
+Label.kE1 = 'k_{E1}';
+Label.kF0 = 'k_{F0}';
+Label.kF1 = 'k_{F1}';
+Label.anomer0 = 'anomer_{0}';
+Label.anomer1 = 'anomer_{1}';
+Label.R2A0 = 'R_{2A0}';
+Label.R2A1 = 'R_{2A1}';
+
+% pH exchaneg constants
+Unit.kB0 = '';
+Unit.kB1 = '';
+Unit.kBT0 = '';
+Unit.kBT1 = '';
+Unit.kD0 = '';
+Unit.kD1 = '';
+Unit.kDT0 = '';
+Unit.kDT1 = '';
+Unit.kE0 = '';
+Unit.kE1 = '';
+Unit.kET0 = '';
+Unit.kET1 = '';
+Unit.kF0 = '';
+Unit.kF1 = '';
+Unit.kFT0 = '';
+Unit.kFT1 = '';
+Unit.anomer0 = '';
+Unit.anomer1 = '';
+Unit.anomerT0 = '';
+Unit.R2A0 = '';
+Unit.R2A1 = '';
+Unit.R2AT0 = '';
+Unit.R2AT1 = '';
 
 % XXXXXXXXXXXXXXXXXXXXXXXXX
 % XXXXXXXXX UNITS XXXXXXXXX
@@ -199,3 +241,6 @@ Unit.kEF = 'Hz';
 Unit.kEG = 'Hz';
 
 Unit.kFG = 'Hz';
+
+Unit.anomer = '';
+

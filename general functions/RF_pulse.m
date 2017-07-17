@@ -83,6 +83,26 @@ elseif any(strcmp(P.shape,'seq_gauss'))
         w1=w1.*P.DC; 
     end;
     
+elseif any(strcmp(P.shape,'seq_siemens'))  %% got from scanner VD (20ms, 0.6µT)
+   
+    gauss=@(x,w1max) w1max*(-25.88*(x/P.tp).^6 + 76.88*(x/P.tp).^5  -67.47*(x/P.tp).^4 + 8.011*(x/P.tp).^3 + 8.034*(x/P.tp).^2 +  0.4235*(x/P.tp)  -0.0002965);
+    w1=gauss(tpulse,1);
+    
+    %b1 linear
+    norm=trapz(tpulse,abs(w1))./(P.tp/P.DC);
+    w1=w1./norm*P.B1;
+
+    if P.B1cwpe_quad==1
+        %b1 quadratisch
+        norm=sqrt(trapz(tpulse,abs(w1.^2))./((P.tp/P.DC)));
+        w1=w1./norm*P.B1;
+    elseif P.B1cwpe_quad==-1
+        w1=w1.*P.DC; 
+    end;
+    
+    
+     
+  
     
     
 elseif any(strcmp(P.shape,'gauss'))    

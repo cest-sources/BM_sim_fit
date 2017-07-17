@@ -11,7 +11,7 @@ param_xscale={'lin','log','log','log'};
 
 % set FontSize and LineWidth for legend/label/title...
 myLineWidth         = 1;
-myMarkerSize        = 4;
+myMarkerSize        = 2;
 fontsize_legend     = 12;
 fontsize_label      = 14;
 fontsize_ticks      = 14;
@@ -105,7 +105,12 @@ for jj=1:n_names
             subplot(plot_dim(1), plot_dim(2), jj),
 
             % get subplot label for the legend
-            str          = sprintf('%s = %.2f %s', PLabel.(field), Sim.(field), PUnit.(field));
+            if iscell(Sim.(field))
+                str          = sprintf('%s = %s %s', PLabel.(field), Sim.(field){1}, PUnit.(field));
+            else
+                 str          = sprintf('%s = %.2f %s', PLabel.(field), Sim.(field), PUnit.(field));
+            
+            end;
             hname(ii)    = {str};
             
             % plot numerical AND analytical solution
@@ -159,7 +164,7 @@ for jj=1:n_names
             if Sim.numeric && Sim.analytic
                 % numerical solution
 %                 plot(ax,az,'Marker','d','Markersize', 5,'MarkerFaceColor','black','color',cc(ii,:),'LineStyle','none');
-                plot(ax,az,'Marker','o','Markersize', myMarkerSize,'MarkerFaceColor',cc(ii,:),'color',cc(ii,:),'LineStyle','none');
+                plot(ax,az,'.-','Markersize', myMarkerSize,'MarkerFaceColor',cc(ii,:),'color',cc(ii,:),'LineStyle','none');
                 hold on;
                 % analytical solution
                 h2 = plot(anax,anaz,'LineWidth',myLineWidth,'color',cc(ii,:),'DisplayName',str);
@@ -169,7 +174,7 @@ for jj=1:n_names
             % plot numerical solution only  
             elseif Sim.numeric && ~Sim.analytic
 %                 h2 = plot(ax,az,'Marker','d','Markersize', 5,'MarkerFaceColor','black','color',cc(ii,:),'LineStyle','none','DisplayName',str);
-                h2 = plot(ax,az,'Marker','o','Markersize', myMarkerSize,'MarkerFaceColor',cc(ii,:),'color',cc(ii,:),'LineStyle','-','LineWidth',myLineWidth,'DisplayName',str);
+                h2 = plot(ax,az,'.-','Markersize', myMarkerSize,'MarkerFaceColor',cc(ii,:),'color',cc(ii,:),'LineStyle','-','LineWidth',myLineWidth,'DisplayName',str);
                 hold on;
                 hvec2(ii)= h2; % handle vector for the legend
 %                 title({sprintf('%s' ,PLabel.(field));'\fontsize{8} numerical (\diamondsuit) solutions'},'FontSize',12);
