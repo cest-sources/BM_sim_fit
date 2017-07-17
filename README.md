@@ -10,7 +10,7 @@ Allows for simulation of BM system upon RF presaturation
  - Both full Z-spectra and single offset evaluation possible
  - Ready for multi parameter simulations
  
-**Read more about usage in BM_Documentation.docx 	and BM_tutorial.pptx**
+**Read more about usage in \doc\BM_Documentation.docx 	and \doc\BM_tutorial.pptx**
 
 
 ###Acknowledgments
