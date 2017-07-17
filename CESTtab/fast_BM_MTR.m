@@ -1,4 +1,4 @@
-function [MTRasym,  MTRRex]= fast_BM_MTR(P,vary,varyval,B1,tp)
+function [MTRasym,  MTRRex, Zlab, Zref]= fast_BM_MTR(P,vary,varyval,B1,tp)
 %fast MTR calculation,  example: fast_BM_MTR(P,{'kBA'},[1:1000],1,1);
 %calculates MTR for B1=1, tp=1 (overides) and a parameter struct P like below: 
 % P.analytic      = 1;                    % Optimization type - cases: analytical(1), numerical(0)
@@ -33,7 +33,7 @@ function [MTRasym,  MTRRex]= fast_BM_MTR(P,vary,varyval,B1,tp)
 % P.CESTagent = 'PARACEST';
 % P           = getSim(P);    
 
-
+P.kAB = P.kBA*P.fB;
 single_offset=P.dwB;
 
 P.B1=B1;
@@ -45,7 +45,7 @@ else
     Z = conv_num([],P.xZspec,P,[],vary,varyval);
 end
 
-Zmat=reshape(Z,2,numel(varyval));
+Zmat=reshape(Z,numel(P.xZspec),numel(varyval));
 
 ind_lab=find_nearest(P.xZspec,single_offset);
 ind_ref=find_nearest(P.xZspec,-single_offset);

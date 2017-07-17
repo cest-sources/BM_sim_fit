@@ -1,4 +1,4 @@
-function Zrow = norm_run(Zrow,runstr,offset)
+function [Zrow, Mnorm] = norm_run(Zrow,runstr,offset)
 %  Ztab('ucl1') = norm_run(Ztab('ucl1'),1,0)
 if ~isempty(offset)
     
@@ -23,6 +23,7 @@ end;
 Zrow{:,runstr}=subtab;
 else
     warning('offset is empty, nothing was done!');
+    Mnorm=1;
 end;
 
 

@@ -5,7 +5,12 @@ if ~isempty(offset)
 w=Zrow.offset{1};
 subtab=Zrow{:,runstr};
 
-offseti=find_nearest(w,offset);
+offseti=[];
+
+    for ii=1:numel(offset)
+    offseti=[offseti find_nearest(w,offset(ii))];
+    end;
+
 
 
 % normalize
