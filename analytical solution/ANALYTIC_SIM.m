@@ -2,6 +2,9 @@ function [M Rex S] = ANALYTIC_SIM(Sim)
 % comments here
 % last change: 2014/04/03 by PS
 
+Sim.td        = calc_td(Sim.tp,Sim.DC);     % td is always calculated form the duty-cycle and tp  
+
+
 xZspec  = Sim.xZspec;
         
 [S Rex] = rho_s(Sim);
@@ -21,7 +24,7 @@ end;
 
 % calculate initial magnetisation
 % to compensate pause pulse formalism relaxation time is just Sim.Trec-Sim.td
-Zi = (Sim.Zi-1).*exp(-(Sim.R1A*(Sim.Trec-Sim.td))) +1;
+Zi = Sim.Zi;
 
 
 %%
@@ -65,9 +68,9 @@ else
         Sim.alpha_fac = 0.5;
         alpha_F = Sim.alpha_fac* S.alpha_f_mean(:);    %alpha_f(P,xZspec);
     end
-    Zss = (Pz.*Pzeff.*(1-Q) - (1-p.^(-1)) .* (-Pz.*cos(theta).*Sim.R1A./(R1rho))) ./ (p.^(-1)-Pz.*Pzeff.*((1-alpha_F).*Q));
-    xi  = ((1-alpha_F)*Q).*Pz.*Pzeff;   %%MZ 8.7.2013
-    Z_pulsedCESL_approx = (Zi-Zss).*xi.^(Sim.n).*exp((R1rho*Sim.tp)*Sim.n) +Zss;
+    Zss = (Pz.*Pzeff.*(1-Q) - (1-p.^(-1)) .* (-Pz.*cos(theta).*Sim.R1A./(R1rho))) ./ (p.^(-1)-Pz.*Pzeff.*((1-alpha_F(:)).*Q));
+    xi  = ((1-alpha_F(:))*Q).*Pz.*Pzeff;   %%MZ 8.7.2013
+    Z_pulsedCESL_approx = (Zi-Zss).*xi.^(Sim.n).*exp((R1rho(:)*Sim.tp)*Sim.n) +Zss;
     M.zspec_pulsedCESL_approx = Z_pulsedCESL_approx;
     clear Q p alpha_F Zss xi
 
