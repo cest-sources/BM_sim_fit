@@ -78,6 +78,9 @@ fb=0.0009;
 if ii==1
     ome.kBA=[fitresult.kb ci(2)];
     ome.fB=[fitresult.fb ci(1)];
+    ome.MTR=MTR;
+    ome.w_x=xData;
+    ome.fit=fitresult;
 end;
 
 end;

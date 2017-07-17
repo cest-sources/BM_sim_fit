@@ -1,4 +1,4 @@
-function [quesp, quesp_orig] =  QUESP(Zlab,Zref,single_offset,P, ext_opts)
+function [quesp, quesp_inv] =  QUESP(Zlab,Zref,single_offset,P, ext_opts)
 if iscell(P.vary)
     P.vary=P.vary{1};
 end;
@@ -72,6 +72,9 @@ ci = ci(2,:)-coeffvalues(fitresult);
 if ii==1 % MTRASYM
     quesp.kBA=[fitresult.kb ci(2)];
     quesp.fB=[fitresult.fb ci(1)];
+    quesp.MTR=MTR;
+    quesp.w_x=xData;
+    quesp.fit=fitresult;
     
     legend( h, sprintf('MTR_{asym}(%.2f ppm) vs. %s',single_offset,P.vary), sprintf('QUESP fit, \nfb=%.2e±%.1e, \nkb=%.2f±%.2f',fitresult.fb,ci(1),fitresult.kb,ci(2)), 'Location', 'NorthEast' );
 
@@ -86,6 +89,9 @@ end;
 if ii==2 % MTRREX
     quesp_inv.kBA=[fitresult.kb ci(2)];
     quesp_inv.fB=[fitresult.fb ci(1)];
+    quesp_inv.MTR=MTR;
+    quesp_inv.w_x=xData;
+    quesp_inv.fit=fitresult;
     ylabel( 'MTR_{Rex}' );
        legend( h, sprintf('MTR_{Rex}(%.2f ppm) vs. %s',single_offset,P.vary), sprintf('QUESP fit, \nfb=%.2e±%.1e, \nkb=%.2f±%.2f',fitresult.fb,ci(1),fitresult.kb,ci(2)), 'Location', 'NorthEast' );
 
