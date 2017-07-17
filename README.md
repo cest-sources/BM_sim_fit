@@ -1,5 +1,12 @@
 # BM_sim_fit
-Bloch-McConnell simulation (full numerical)
+Bloch-McConnell simulation (full numerical and analytical) and fit (multi B1)
+preRelease 2017
+
+the code was used and is documented for the paper:
+
+Zaiss, M., Angelovski, G., Demetriou, E., McMahon, M. T., Golay, X. and Scheffler, K. (2017), QUESP and QUEST revisited – fast and accurate quantitative CEST experiments. Magn. Reson. Med. doi:10.1002/mrm.26813
+
+
 
 Allows for simulation of BM system upon RF presaturation 
  - multiple pools possible (water, 5 CEST, 1  semisolid MT)
