@@ -33,7 +33,7 @@ Sim=init_Sim(struct()); % initializes all pools with zeroes and sets some standa
 Sim.analytic      = 1;                    % Optimization type - cases: analytical(1), numerical(0)
 Sim.MT            = 0;                    % 1 = with MT, 0 = no MT pool (MT is always pool C)
 Sim.MT_lineshape  = 'SuperLorentzian';    % ssMT lineshape - cases: SuperLorentzian, Gaussian, Lorentzian
-Sim.n_cest_pool   = 1;                    % number of CEST/NOE pools (CEST pools: B,D,E,F,G)
+Sim.n_cest_pool   = 2;                    % number of CEST/NOE pools (CEST pools: B,D,E,F,G)
 
 % MR and sequence parameters
 Sim.FREQ          = 7*gamma_;           % frequency (=B0[T] * gamma)
@@ -64,7 +64,7 @@ Sim.R2A=2;
 % first CEST pool B (paraCEST pool)
 Sim.n_cest_pool=1;
 Sim.fB=0.00009;  % rel. conc 10mM/111M
-Sim.kBA=2000;   % exchange rate in Hz ( the fast one, kBA is calculated by this and fB)
+Sim.kBA=1000;   % exchange rate in Hz ( the fast one, kBA is calculated by this and fB)
 Sim.dwB=55;     % ppm  relative to dwA
 Sim.R1B=1;      % R1B relaxation rate [Hz]
 Sim.R2B=50;     % R2B relaxation rate [Hz]
@@ -96,8 +96,8 @@ T.upperA      = [   Sim.dwA+1     2*Sim.R1A     20000*Sim.R2A  ];
 T.varyB       = [   1               1           1             1      ];
 T.dep_varsB   = {   'dwB',        'fB',       'kBA',        'R2B'    };     
 T.startB      = [   Sim.dwB       Sim.fB      Sim.kBA       Sim.R2B  ];
-T.lowerB      = [   Sim.dwB-5    Sim.fB*0.1  Sim.kBA/1000     0      ];
-T.upperB      = [   Sim.dwB+5    Sim.fB*10    Sim.kBA*1000    50     ];
+T.lowerB      = [   Sim.dwB-10    Sim.fB*0.1  Sim.kBA/1000     0      ];
+T.upperB      = [   Sim.dwB+10    Sim.fB*10    Sim.kBA*1000    50     ];
 
 [T.dep_varsB, T.startB, T.lowerB, T.upperB] = selectVars( T.varyB, T.dep_varsB, T.startB, T.lowerB, T.upperB );
 
@@ -115,8 +115,8 @@ T.upperB      = [   Sim.dwB+5    Sim.fB*10    Sim.kBA*1000    50     ];
 T.varyD       = [ 1            1           1                0            ];
 T.dep_varsD   = {'dwD',       'fD',       'kDA',          'R2D',         };     
 T.startD      = [Sim.dwD      Sim.fD        Sim.kDA       Sim.R2D        ];
-T.lowerD      = [Sim.dwD-5   Sim.fD*0.01    Sim.kDA/1000     0            ];
-T.upperD      = [Sim.dwD+5   Sim.fD*100     Sim.kDA*1000    50            ];
+T.lowerD      = [Sim.dwD-10   Sim.fD*0.01    Sim.kDA/1000     0            ];
+T.upperD      = [Sim.dwD+3   Sim.fD*100     Sim.kDA*1000    50            ];
  
 [T.dep_varsD, T.startD, T.lowerD, T.upperD] = selectVars( T.varyD, T.dep_varsD, T.startD, T.lowerD, T.upperD );
 
@@ -131,8 +131,8 @@ figure(2002), multiZplot(P,Sim,FIT.T,w_x,Z_x); % plot guess  with data
 %% 1.4  multi-Z-BMfitting of the Z_x data (wherever it comes from)
 % RUN full BM OPTIMIZATION 
 % you need a startvalue, run 1.3 first!
-P.analytic=1;  % set1 this to 1 if analytic fit should be used, numeric =0 can take forever
-P.n_cest_pool=2;
+Sim.analytic=1;  % set1 this to 1 if analytic fit should be used, numeric =0 can take forever
+Sim.n_cest_pool=2;
 
 % fit-options
 [FIT] =multiZfit(P,Sim,FIT.T,w_x,Z_x);
@@ -182,6 +182,7 @@ uisave('Ztab','Ztab_DOTA')
 
 %% 1.7 reaload Ztab  (after this run 1.4 or 1.5 again)
 % open Ztab and check for rowname and also column name of fit(FIT3p here)
+
 if ~exist('Ztab') uiload; end;
 rowname='Dota37degC';
 Sim=Ztab.FIT3p{rowname}.Sim
@@ -203,7 +204,7 @@ row_x=[15  25  37 ];
 ind=1:numel(row_ind);
 for ii=ind
    FITres= Ztab{row_ind(ii),'FIT3p'}{1};
-   quesp= Ztab{row_ind(ii),'QUESP'}{1};
+   quesp= Ztab{row_ind(ii),'QUESP_inv'}{1};
    omega= Ztab{row_ind(ii),'Omega'}{1};
    fitkBA(ii,:)=FITres.kBA;
 %    fitkDA(ii)=FITres.kDA;

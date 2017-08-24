@@ -1,4 +1,4 @@
-function  [w_x, Z_x, P, file, Ztab]=LOAD_xls_qCEST_2_Ztab(sheets)
+function  [w_x, Z_x, P, rowname, Ztab]=LOAD_xls_qCEST_2_Ztab(sheets)
 %%
 [file, path] =uigetfile('*');
 if nargin<1
@@ -27,6 +27,7 @@ tablestr=sheets{JJ};
 expname=raw{1};
 
 Ztab.Properties.RowNames{JJ} = [expname(1:4) sheets{JJ}] ;
+rowname=Ztab.Properties.RowNames{JJ};
 %%%% exp params
 [~, ~, raw] = xlsread([path file],tablestr,'B2:B15');
 
@@ -54,7 +55,7 @@ P.shape= raw{1};
 
 %%%% load Z
 
-loadstr=sprintf('B24:%s%d',char(double('A')+NB1),23+NEX); % this collects teh right data
+loadstr=sprintf('B24:%s%d',char(double('A')+NB1),23+NEX); % this collects the right data
 [~, ~, raw] = xlsread([path file],tablestr,loadstr);
 Z_x = reshape([raw{:}],size(raw));
 Z_xxx = reshape(Z_x,size(Z_x,1)*size(Z_x,2),1);
@@ -91,7 +92,7 @@ Ztab.P{row} = P;
 Ztab.offset{row}=P.xZspec;
 
 % normalization and exclusion
-Ztab(row,:) = norm_run(Ztab(row,:),'B1_run',P.normalized) ;
+% Ztab(row,:) = norm_run(Ztab(row,:),'B1_run',P.normalized) ;
  
 figure,
 plot_tab(Ztab,Ztab.Properties.RowNames{JJ},'B1_run');
