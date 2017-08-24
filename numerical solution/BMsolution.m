@@ -1,6 +1,16 @@
 function [Z, A, Ainvb, dia] = BMsolution(x0, xZspec, tspan, z0, y0, y1)
 % comments here
 % last change: 2014/04/02 by PS
+% BM solution solves the Bloch-McConnell equations stepwise
+
+
+
+
+
+
+
+
+
 
 % set kCA=0 and fC=0, if MT is disabled
 if x0(1,3) == 0;            % (x0(1,3) = Sim.MT)

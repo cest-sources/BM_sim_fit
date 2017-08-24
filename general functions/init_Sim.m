@@ -28,7 +28,7 @@ Sim.c             = 1;                      % this is a free parameter to play a
 
 % sequence/scanner parameters
 % readout
-Sim.dummies=1;  %% 
+Sim.dummies=0;  %% 
  Sim.TR  = 3/1000;
  Sim.linestomeasure=1;
  Sim.flipangle= 90;
