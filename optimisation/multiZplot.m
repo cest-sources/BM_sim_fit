@@ -83,15 +83,15 @@ end;
 
 % plot your measured and simulated data (uses starting point values)
 if PP.analytic
-    GUESS = conv_ana(pp,w_x,PP,dep_vars,PP.vary,PP.varyval);
+    GUESS = conv_ana(pp,PP.xZspec,PP,dep_vars,PP.vary,PP.varyval);
 else
-    GUESS = conv_num(pp,w_x,PP,dep_vars,PP.vary,PP.varyval);
+    GUESS = conv_num(pp,PP.xZspec,PP,dep_vars,PP.vary,PP.varyval);
 end
 
 % plot "1st-guess" with deviations from data points
 
-GUESSmat=reshape(GUESS,numel(w_x),size(PP.varyval,2));
-plot(w_x,GUESSmat,'-');
+GUESSmat=reshape(GUESS,numel(PP.xZspec),size(PP.varyval,2));
+plot(PP.xZspec,GUESSmat,'-');
 clear leg;
 
 
