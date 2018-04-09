@@ -1,20 +1,8 @@
 % set initial values of CEST and MT pools (required for numeric solution)
 
 % do the following to initialize, or call 
-%  Sim=init_pools(struct);
-Sim.fA=1;
-Sim.fB=1e-32;Sim.R1B=1;Sim.R2B=1;Sim.kBA=0;Sim.kAB=0;Sim.dwB=0;
-Sim.fC=1e-32;Sim.R1C=1;Sim.R2C=1;Sim.kCA=0;Sim.kAC=0;Sim.dwC=0;
-Sim.fD=1e-32;Sim.R1D=1;Sim.R2D=1;Sim.kDA=0;Sim.kAD=0;Sim.dwD=0;
-Sim.fE=1e-32;Sim.R1E=1;Sim.R2E=1;Sim.kEA=0;Sim.kAE=0;Sim.dwE=0;
-Sim.fF=1e-32;Sim.R1F=1;Sim.R2F=1;Sim.kFA=0;Sim.kAF=0;Sim.dwF=0;
-Sim.fG=1e-32;Sim.R1G=1;Sim.R2G=1;Sim.kGA=0;Sim.kAG=0;Sim.dwG=0;
 
-% set initial values for intramolecular exchange
-Sim.kBD=0; Sim.kBE=0; Sim.kBF=0; Sim.kBG=0;
-Sim.kDE=0; Sim.kDF=0; Sim.kDG=0;
-Sim.kEF=0; Sim.kEG=0;
-Sim.kFG=0;
+  Sim=init_Sim(struct());
 
 
 %%
@@ -53,9 +41,10 @@ Sim.dummies=0;
 Sim.flipangle=5; 
 Sim.readout='FID'; 
 Sim.spoilf=0; 
+Sim.TTM_rep =0;
 
 num = NUMERIC_SIM(Sim);
 figure(1), plot(num.x,num.zspec,'.'); hold on;
 ana = ANALYTIC_SIM(Sim)
-figure(1), plot(ana.x,ana.zspec); hold on;
+figure(1), plot(ana.x,ana.zspec,ana.x,ana.zspec(end:-1:1)-ana.zspec ); hold on;
 
