@@ -6,6 +6,7 @@
 
 
 %%
+
 Sim.n_cest_pool=1;
 Sim.dwA=0;
 Sim.R1A=1;
@@ -41,7 +42,8 @@ Sim.dummies=0;
 Sim.flipangle=5; 
 Sim.readout='FID'; 
 Sim.spoilf=0; 
-Sim.TTM_rep =0;
+
+
 
 num = NUMERIC_SIM(Sim);
 figure(1), plot(num.x,num.zspec,'.'); hold on;

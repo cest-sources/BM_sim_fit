@@ -20,6 +20,8 @@ Sim.kFG=0;
 
 % simulation initializations
 Sim.Rex_sol       = 'Hyper';              % cases: 'Hyper', 'Lorentz' , 'minilorentz'
+Sim.MT_sol_type       = 'Rex_MT';         % Rex_MT solution type - cases: 'Rex_MT'
+Sim.MT_lineshape= 'Lorentzian';
 Sim.spoilf        = 0;                    % spoilingfactor (0 = full spoiling, 1= no spoiling)
 %XXXXXXXXXXXXXXX DONT CHANGE ! XXXXXXXXXXXXXXXX
 Sim.B1cwpe_quad   = -1;                     % this is the B1 power equivalent flag: -1 means that P.B1 is the average B1 over a single pulse 
@@ -34,3 +36,4 @@ Sim.dummies=0;  %%
  Sim.flipangle= 90;
  Sim.readout='FID';
  Sim.TTM_rep = 0;    
+ Sim.DC=0.5;

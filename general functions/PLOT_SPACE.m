@@ -6,12 +6,12 @@ assert( isstruct( Sim ), 'Simulation parameter Sim not set.');
 assert( ~isempty( fieldnames(NUMERIC_SPACE) ) || ~isempty( fieldnames(ANALYTIC_SPACE) ), 'No data to plot given.' );
 
 % adjust param_xscale for all_offsets = 0 plots
-% param_xscale={'lin','lin','lin','lin','log','log','lin','log','log'};
-param_xscale={'lin','log','log','log'};
+param_xscale={'lin','lin','lin','lin','lin','lin','lin','lin','lin'};
+
 
 % set FontSize and LineWidth for legend/label/title...
 myLineWidth         = 1;
-myMarkerSize        = 2;
+myMarkerSize        = 6;
 fontsize_legend     = 12;
 fontsize_label      = 14;
 fontsize_ticks      = 14;
@@ -117,7 +117,7 @@ for jj=1:n_names
             if Sim.numeric && Sim.analytic
                 % numerical solution
 %                 plot(xsim,Zsim,'Marker','d','Markersize', 5,'MarkerFaceColor','black','color',cc(ii,:),'LineStyle','none');
-                plot(xsim,Zsim,'Marker','o','Markersize', myMarkerSize,'MarkerFaceColor',cc(ii,:),'color',cc(ii,:),'LineStyle','none');
+                plot(xsim,Zsim,'Marker','.','Markersize', myMarkerSize,'MarkerFaceColor',cc(ii,:),'color',cc(ii,:),'LineStyle','none');
                 hold on; 
                 % analytical solution
                 h = plot(xmod,Zmod,'LineWidth',myLineWidth,'color',cc(ii,:),'DisplayName',str);
@@ -127,7 +127,7 @@ for jj=1:n_names
             % plot numerical solution only
             elseif Sim.numeric && ~Sim.analytic
 %                 h = plot(xsim,abs(Zsim),'Marker','d','Markersize', 5,'MarkerFaceColor','black','color',cc(ii,:),'LineStyle','-','DisplayName',str);
-                h = plot(xsim,abs(Zsim),'Marker','o','Markersize', myMarkerSize,'MarkerFaceColor',cc(ii,:),'color',cc(ii,:),'LineStyle','-','LineWidth',myLineWidth,'DisplayName',str);
+                h = plot(xsim,abs(Zsim),'Marker','.','Markersize', myMarkerSize,'MarkerFaceColor',cc(ii,:),'color',cc(ii,:),'LineStyle','-','LineWidth',myLineWidth,'DisplayName',str);
                 hold on;
                 hvec(ii)= h; % handle vector for the legend
 %                 title({sprintf('%s' ,PLabel.(field));'\fontsize{8} numerical (\diamondsuit) solutions'},'FontSize',12);
@@ -195,6 +195,7 @@ for jj=1:n_names
             
             
             
+            
             % % % % % % % % %
             % % % AREX  % % %
             % % % % % % % % %
@@ -222,7 +223,7 @@ for jj=1:n_names
 %             % plot numerical solution only  
 %             elseif Sim.numeric && ~Sim.analytic
 % %                 h2 = plot(x_arex,y_arex,'Marker','d','Markersize', 5,'MarkerFaceColor','black','color',cc(ii,:),'LineStyle','none','DisplayName',str);
-%                 h2 = plot(x_arex,y_arex,'Marker','o','Markersize', 5,'color',cc(ii,:),'LineStyle','-','LineWidth',1.5,'DisplayName',str);
+%                 h2 = plot(x_arex,y_arex,'Marker','.','Markersize', 5,'color',cc(ii,:),'LineStyle','-','LineWidth',1.5,'DisplayName',str);
 %                 hold on;
 %                 hvec2(ii)= h2; % handle vector for the legend
 % %                 title({sprintf('%s' ,PLabel.(field));'\fontsize{8} numerical (\diamondsuit) solutions'},'FontSize',12);
@@ -252,7 +253,7 @@ for jj=1:n_names
                 % plot analytical solution only
                 h2 = plot(xsim,R1rho,'LineWidth',myLineWidth,'color',cc(ii,:),'DisplayName',str);
                 hold on;
-                hvec2(ii)= h2; % handle vector for the legend
+                hvec3(ii)= h2; % handle vector for the legend
 %                 title({sprintf('%s' ,PLabel.(field));'\fontsize{8} analytical (---) solutions'},'FontSize',12);
                 
                 % general plot settings
@@ -331,10 +332,13 @@ for jj=1:n_names
         % plot Z(offset) over varyvals
         figure(333),
         subplot(plot_dim(1), plot_dim(2), jj),
+        
+        
+        if Sim.numeric
         h   = plot(Onres.(field).x,Onres.(field).Zss(:,1),'.','color','blue','DisplayName','numerical solution');
         hold on
         
-        if Sim.numeric
+        
             plot(Onres.(field).x,Onres.(field).Zss(:,2),'.','color','cyan','DisplayName','numerical solution');
         end
         
@@ -353,7 +357,7 @@ for jj=1:n_names
         end
 
         xlabel(PLabel.(field));
-        ylabel('Z ( \Delta\omega_B )');
+        ylabel(['Z ( \Delta\omega=' sprintf('%.2f )',Sim.offset) ' ppm']);
         set(gca,'XScale',param_xscale{jj});
         set(gca,'YScale','lin');
         str = sprintf('Z (%s)', PLabel.(field));
@@ -382,7 +386,7 @@ for jj=1:n_names
         end
 
         xlabel(PLabel.(field));
-        ylabel('MTR_{asym} ( \Delta\omega_B )');
+        ylabel(['MTR_{asym} ( \Delta\omega=' sprintf('%.2f )',Sim.offset) ' ppm']);
         set(gca,'XScale',param_xscale{jj});
         set(gca,'YScale','lin');
         str = sprintf('MTR_{asym} (%s)', PLabel.(field));
