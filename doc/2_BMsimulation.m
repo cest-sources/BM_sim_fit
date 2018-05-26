@@ -9,25 +9,35 @@
 
 Sim.n_cest_pool=1;
 Sim.dwA=0;
-Sim.R1A=1;
-Sim.R2A=10;
+Sim.R1A=1/2;
+Sim.R2A=1/1;
+% Sim.R1A=1/1.820;  % GM3T
+% Sim.R2A=1/0.099;  % GM3T
 
-Sim.fB=0.01;
-Sim.kBA=1000;
-Sim.dwB=2; % ppm  relative to dwA
+Sim.fB=0.0001406;
+Sim.kBA=7000;
+Sim.dwB=55; % ppm  relative to dwA
 Sim.R1B=1; 
 Sim.R2B=50;
 
+Sim.MT        = 0; 
+%MT
+% Sim.MT                = 1;                % 1 = with MT pool (pool C), 0 = no MT pool
+% Sim.MT_lineshape      = 'SuperLorentzian';       % MT lineshape - cases: SuperLorentzian, Gaussian, Lorentzian
+% Sim.R1C=1;
+% Sim.fC=0.05;
+% Sim.R2C=109890;  % 1/9.1µs
+% Sim.kCA=40; Sim.kAC=Sim.kCA*Sim.fC;
 
 Sim.FREQ=300;
 Sim.Zi=0.9;
-Sim.B1=1;		 % the saturation B1 in µT
+Sim.B1=25;		 % the saturation B1 in µT
 Sim.tp=5;		 % [s]
 Sim.n=1;	Sim.DC=1;
 Sim.shape='block';		 
 Sim.pulsed=0;		
 
-Sim.xZspec = -5:0.1:5;
+Sim.xZspec = -80:0.1:80;
 
 
 Sim.analytic          = 1;                % calculate analtical solution? 1=yes, 0=no
