@@ -60,3 +60,15 @@ figure(1), plot(num.x,num.zspec,'.'); hold on;
 ana = ANALYTIC_SIM(Sim)
 figure(1), plot(ana.x,ana.zspec,ana.x,ana.zspec(end:-1:1)-ana.zspec ); hold on;
 
+
+expname='PARACEST'
+
+if ~exist('expn')
+    expn=1;
+end;
+
+T = table(num.x,num.zspec,num.zspec(end:-1:1)-num.zspec);
+T.Properties.VariableNames = {'offsets' 'Z' 'Asym'}
+filename = 'simulation_data.xlsx';
+writetable(T,filename,'Sheet',sprintf('exp%d_%s',expn,expname));
+expn=expn+1;
