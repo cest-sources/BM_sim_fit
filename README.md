@@ -1,3 +1,9 @@
+
+# BM_sim_fit_Li
+
+adaptions for Li-CEST fitting
+
+
 # BM_sim_fit
 Bloch-McConnell simulation (full numerical and analytical) and fit (multi B1)
 preRelease 2017
