@@ -42,6 +42,7 @@ if multiple
 [P S] =get_BMrelations(P);
         
             [Msim Rex S]    = ANALYTIC_SIM(P);
+
             if isfield(P,'normalized')
                 if ~isempty(P.normalized)
                     
@@ -51,7 +52,8 @@ if multiple
             end;
                 
             zspec   = [zspec ; abs(Msim.zspec)];
-            xZspec  = [xZspec ; xxx];
+            xZspec  = [xZspec(:) ; xxx(:)];
+
 %             assignin('base','Rex',Rex);  if Rex shall be written in the  workspace
 %             assignin('base','S',S);
     end;
