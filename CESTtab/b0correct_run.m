@@ -17,7 +17,7 @@ function Zrow = b0correct_run(Zrow,runstr)
             [minval,minind]=min(Z_splined);
             dB0=wfit(minind,1);
 
-            if abs(dB0)>1 %frage ab: aktuelle B0 verschiebung
+            if abs(dB0)>40 %frage ab: aktuelle B0 verschiebung
                warning('DANGER in B0 correction - dB0 larger than 1 ppm') 
             end;
             
