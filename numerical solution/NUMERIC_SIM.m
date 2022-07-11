@@ -401,11 +401,7 @@ for dd=1:1+Sim.dummies
         % XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         % XXXXXXXXXXXXXXXXXXXXXXXXXX SPOILING XXXXXXXXXXXXXXXXXXXXXXXXXXX
         % XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        
-        % relaxtion during spoiling
-        x0(1,2) = 0;
-        MV = BMsolution(x0, xZspec, [0 0.0045], z0, y0, MV);
-        
+             
         MV(1:12,:)       = Sim.spoilf*MV(1:12,:);
         
         
