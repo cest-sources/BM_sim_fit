@@ -32,7 +32,7 @@ if multiple
             vary{1}=temp; clear temp;
            warning('please use new notation for vary: ist a struct now P.vary{1}=B1');
       
-        end;
+        end
         
         for jj = 1:numel(vary) % thsi realizes multiple varying parameters
             P.(vary{jj}) = val(jj,ii)*P.c;
@@ -57,6 +57,9 @@ if multiple
 %             assignin('base','Rex',Rex);  if Rex shall be written in the  workspace
 %             assignin('base','S',S);
     end;
+    
+    %zspec=(zspec+P.fE)/(1+P.fE); % normalization  including the inactive-metal pool E
+    
 else
     [Msim Rex S]    = ANALYTIC_SIM(P);
      if isfield(P,'normalized')
